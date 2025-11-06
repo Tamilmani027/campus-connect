@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ company.name }}{% endblock %}
+{% block content %}
+<h2>{{ company.name }}</h2>
+<p>{{ company.description }}</p>
+<p><strong>Website:</strong> <a href="{{ company.website }}">{{ company.website }}</a></p>
+
+<hr>
+<h4>Interview Experiences</h4>
+{% if experiences %}
+  <div class="list-group">
+    {% for e in experiences %}
+      <div class="list-group-item">
+        <h5>{{ e.student_name }} ({{ e.department }} - {{ e.batch }})</h5>
+        <p><strong>Role:</strong> {{ e.role }}</p>
+        <p>{{ e.experience_text }}</p>
+        <p><strong>Questions:</strong> {{ e.questions_faced }}</p>
+        <p><strong>Tips:</strong> {{ e.tips }}</p>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>No experiences available yet.</p>
+{% endif %}
+{% endblock %}

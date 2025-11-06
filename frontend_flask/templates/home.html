@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Hero Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #1490e3 0%, #0d6efd 100%); color: #fff;">
+	<div class="container py-5 text-center">
+		<h1 class="display-3 fw-bold mb-4">Master Your Placement<br/>Journey</h1>
+		<p class="lead mb-4" style="max-width: 820px; margin: 0 auto;">
+			Get access to authentic interview experiences, company insights, and practice
+			resources from seniors who've been there.
+		</p>
+		<div class="d-flex gap-3 justify-content-center mt-3">
+			<a href="/companies" class="btn btn-light btn-lg px-4">
+				Explore Companies
+			</a>
+			<a href="/companies" class="btn btn-outline-light btn-lg px-4">
+				Read Experiences
+			</a>
+		</div>
+	</div>
+</section>
+
+<!-- Quick Links Section -->
+<section class="py-5">
+	<div class="container">
+		<!-- Auth shortcuts -->
+		<div class="row g-4 mb-2">
+			<div class="col-12 col-md-6 col-lg-3">
+				<a href="/student/login" class="text-decoration-none">
+					<div class="card h-100 shadow-sm border-0">
+						<div class="card-body text-center py-4">
+							<h6 class="card-title mb-1">Student Login</h6>
+							<p class="text-muted mb-0">Access your space</p>
+						</div>
+					</div>
+				</a>
+			</div>
+			<div class="col-12 col-md-6 col-lg-3">
+				<a href="/student/register" class="text-decoration-none">
+					<div class="card h-100 shadow-sm border-0">
+						<div class="card-body text-center py-4">
+							<h6 class="card-title mb-1">Student Registration</h6>
+							<p class="text-muted mb-0">Create your account</p>
+						</div>
+					</div>
+				</a>
+			</div>
+			<div class="col-12 col-md-6 col-lg-3">
+				<a href="/login" class="text-decoration-none">
+					<div class="card h-100 shadow-sm border-0">
+						<div class="card-body text-center py-4">
+							<h6 class="card-title mb-1">Admin Login</h6>
+							<p class="text-muted mb-0">Manage the portal</p>
+						</div>
+					</div>
+				</a>
+			</div>
+			<div class="col-12 col-md-6 col-lg-3">
+				<a href="/admin/register" class="text-decoration-none">
+					<div class="card h-100 shadow-sm border-0">
+						<div class="card-body text-center py-4">
+							<h6 class="card-title mb-1">Admin Registration</h6>
+							<p class="text-muted mb-0">Create admin profile</p>
+						</div>
+					</div>
+				</a>
+			</div>
+		</div>
+		<div class="row g-4">
+			<div class="col-12 col-md-6 col-lg-3">
+				<a href="/companies" class="text-decoration-none">
+					<div class="card h-100 shadow-sm border-0">
+						<div class="card-body text-center py-4">
+							<h5 class="card-title mb-2">Explore Companies</h5>
+							<p class="text-muted mb-0">Find roles, sectors, and insights</p>
+						</div>
+					</div>
+				</a>
+			</div>
+			<div class="col-12 col-md-6 col-lg-3">
+				<a href="/companies" class="text-decoration-none">
+					<div class="card h-100 shadow-sm border-0">
+						<div class="card-body text-center py-4">
+							<h5 class="card-title mb-2">Interview Experiences</h5>
+							<p class="text-muted mb-0">Real stories and questions</p>
+						</div>
+					</div>
+				</a>
+			</div>
+			<div class="col-12 col-md-6 col-lg-3">
+				<a href="/resources" class="text-decoration-none">
+					<div class="card h-100 shadow-sm border-0">
+						<div class="card-body text-center py-4">
+							<h5 class="card-title mb-2">Practice Resources</h5>
+							<p class="text-muted mb-0">Roadmaps, sheets, and guides</p>
+						</div>
+					</div>
+				</a>
+			</div>
+			<div class="col-12 col-md-6 col-lg-3">
+				<a href="/resumes" class="text-decoration-none">
+					<div class="card h-100 shadow-sm border-0">
+						<div class="card-body text-center py-4">
+							<h5 class="card-title mb-2">Resume Samples</h5>
+							<p class="text-muted mb-0">Templates and best practices</p>
+						</div>
+					</div>
+				</a>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- Announcements Banner -->
+<section class="pb-5">
+	<div class="container">
+		<div class="alert alert-info d-flex align-items-center mb-0" role="alert">
+			<div class="me-2">📣</div>
+			<div>
+				<strong>Announcements</strong> &mdash; Stay tuned for upcoming drives, workshops, and deadlines.
+			</div>
+			<a href="/announcements" class="ms-auto btn btn-sm btn-outline-info">View all</a>
+		</div>
+	</div>
+</section>
+
+{% endblock %}

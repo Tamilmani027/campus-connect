@@ -1,0 +1,40 @@
+# Environment files
+.env
+*.env
+backend_fastapi/.env
+frontend_flask/.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# IDE files
+.vscode/
+.idea/
+
+# Byte-compiled
+*.db
+*.sqlite3
+
+# Logs
+*.log
+
+# Flask upload files (optional)
+frontend_flask/uploads/
+
+# Alembic migrations cache
+backend_fastapi/migrations/versions/*.pyc
+
+# Compiled files
+*.so
+
+# Project-specific
+backend_fastapi/__pycache__/
+frontend_flask/__pycache__/

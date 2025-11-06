@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container py-4">
+	<h3 class="mb-4">Admin Dashboard</h3>
+
+	<div class="row g-4">
+		<div class="col-12 col-lg-6">
+			<div class="card h-100">
+				<div class="card-header">Pending Interview Experiences</div>
+				<div class="card-body">
+					{% if pending and pending|length %}
+						<ul class="list-group">
+							{% for exp in pending %}
+								<li class="list-group-item d-flex justify-content-between align-items-center">
+									<div>
+										<strong>#{{ exp.id }}</strong> — {{ exp.student_name }} &middot; {{ exp.role or 'Role' }}
+									</div>
+									<div class="btn-group btn-group-sm">
+										<a class="btn btn-success" href="/admin/approve/{{ exp.id }}">Approve</a>
+										<a class="btn btn-outline-danger" href="/admin/reject/{{ exp.id }}">Reject</a>
+									</div>
+								</li>
+							{% endfor %}
+						</ul>
+					{% else %}
+						<p class="text-muted mb-0">No pending experiences.</p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+
+		<div class="col-12 col-lg-6">
+			<div class="card mb-4">
+				<div class="card-header">Create Company</div>
+				<div class="card-body">
+					<form method="POST" action="/admin/company/create" class="row g-3">
+						<div class="col-12 col-md-6"><input class="form-control" name="name" placeholder="Name" required></div>
+						<div class="col-12 col-md-6"><input class="form-control" name="sector" placeholder="Sector"></div>
+						<div class="col-12"><input class="form-control" name="website" placeholder="Website URL"></div>
+						<div class="col-12"><input class="form-control" name="description" placeholder="Short description"></div>
+						<div class="col-12"><button class="btn btn-primary">Create</button></div>
+					</form>
+				</div>
+			</div>
+			<div class="card mb-4">
+				<div class="card-header">Upload Resource (by URL)</div>
+				<div class="card-body">
+					<form method="POST" action="/admin/resource/create" class="row g-3">
+						<div class="col-12 col-md-6"><input class="form-control" name="title" placeholder="Title" required></div>
+						<div class="col-12 col-md-6"><input class="form-control" name="url" placeholder="https://..." required></div>
+						<div class="col-12"><input class="form-control" name="description" placeholder="Description (optional)"></div>
+						<div class="col-12"><button class="btn btn-primary">Add Resource</button></div>
+					</form>
+				</div>
+			</div>
+			<div class="card mb-4">
+				<div class="card-header">Upload Resume Sample (by URL)</div>
+				<div class="card-body">
+					<form method="POST" action="/admin/resume/create" class="row g-3">
+						<div class="col-12 col-md-6"><input class="form-control" name="title" placeholder="Title" required></div>
+						<div class="col-12 col-md-6"><input class="form-control" name="url" placeholder="https://..." required></div>
+						<div class="col-12"><button class="btn btn-primary">Add Resume</button></div>
+					</form>
+				</div>
+			</div>
+			<div class="card">
+				<div class="card-header">Send Announcement</div>
+				<div class="card-body">
+					<form method="POST" action="/admin/announcement/create" class="row g-3">
+						<div class="col-12 col-md-6"><input class="form-control" name="title" placeholder="Title" required></div>
+						<div class="col-12"><textarea class="form-control" name="content" rows="3" placeholder="Message" required></textarea></div>
+						<div class="col-12"><button class="btn btn-primary">Send</button></div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+{% endblock %}
+

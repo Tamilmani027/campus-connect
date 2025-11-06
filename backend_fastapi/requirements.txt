@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+SQLAlchemy==1.4.52
+alembic
+pydantic
+pydantic-settings
+email-validator
+mysql-connector-python
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container py-5" style="max-width: 600px;">
+	<h3 class="mb-3">Student Registration</h3>
+	<p class="text-muted">Create your account to share authentic interview experiences.</p>
+	<form method="POST">
+		<div class="row g-3">
+			<div class="col-12 col-md-6">
+				<label class="form-label">Full Name</label>
+				<input type="text" name="name" class="form-control" required>
+			</div>
+			<div class="col-12 col-md-6">
+				<label class="form-label">Department</label>
+				<input type="text" name="department" class="form-control" placeholder="CSE / ECE / ...">
+			</div>
+			<div class="col-12 col-md-6">
+				<label class="form-label">Batch (Year)</label>
+				<input type="number" name="batch" class="form-control" placeholder="2026">
+			</div>
+			<div class="col-12 col-md-6">
+				<label class="form-label">Email</label>
+				<input type="email" name="email" class="form-control" required>
+			</div>
+			<div class="col-12 col-md-6">
+				<label class="form-label">Password</label>
+				<input type="password" name="password" class="form-control" required>
+			</div>
+		</div>
+		<button type="submit" class="btn btn-primary mt-3 w-100">Create Account</button>
+		<p class="small text-muted mt-2">Note: Registration will be connected to backend soon.</p>
+	</form>
+</div>
+
+{% endblock %}
+
