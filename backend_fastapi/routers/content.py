@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
-from database import get_db
-from models.content import Resource, ResumeSample, Announcement
-from schemas.content import ResourceOut, ResumeOut, AnnouncementOut
+from backend_fastapi.database import get_db
+from backend_fastapi.models.content import Resource, ResumeSample, Announcement
+from backend_fastapi.schemas.content import ResourceOut, ResumeOut, AnnouncementOut
 
 
 router = APIRouter(prefix="/content", tags=["content"])

@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import timedelta
-from database import get_db
-from models.student import Student
-from schemas.student import StudentRegister, StudentLogin, StudentOut
-from schemas.auth import Token
-from utils.hashing import hash_password, verify_password
-from utils.jwt_handler import create_access_token
-from utils.dependencies import get_current_student
-from config import settings
+from backend_fastapi.database import get_db
+from backend_fastapi.models.student import Student
+from backend_fastapi.schemas.student import StudentRegister, StudentLogin, StudentOut
+from backend_fastapi.schemas.auth import Token
+from backend_fastapi.utils.hashing import hash_password, verify_password
+from backend_fastapi.utils.jwt_handler import create_access_token
+from backend_fastapi.utils.dependencies import get_current_student
+from backend_fastapi.config import settings
 
 router = APIRouter(prefix="/students", tags=["students"])
 

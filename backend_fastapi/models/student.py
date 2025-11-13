@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, func
-from database import Base
+from backend_fastapi.database import Base
 
 class Student(Base):
 	__tablename__ = "students"

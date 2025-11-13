@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from database import Base
+from backend_fastapi.database import Base
 
 class Admin(Base):
     __tablename__ = "admins"
