@@ -7,6 +7,7 @@ from ..schemas.student import StudentRegister, StudentLogin, StudentOut
 from ..schemas.auth import Token
 from ..utils.hashing import hash_password, verify_password
 from ..utils.jwt_handler import create_access_token
+from ..utils.dependencies import get_current_student
 from ..config import settings
 
 router = APIRouter(prefix="/students", tags=["students"])
@@ -36,5 +37,10 @@ def student_login(payload: StudentLogin, db: Session = Depends(get_db)):
 	expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 	token = create_access_token({"sub": student.email, "role": "student", "sid": student.id}, expires)
 	return {"access_token": token, "token_type": "bearer"}
+
+
+@router.get("/me", response_model=StudentOut)
+def student_me(current_student: Student = Depends(get_current_student)):
+    return current_student
 
 

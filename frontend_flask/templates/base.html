@@ -3,24 +3,172 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>{% block title %}Placement Portal{% endblock %}</title>
+  <title>{% block title %}CAMPUS CONNECT{% endblock %}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-+sR8lNqLxBH03wqzuoXRxVf1ygY9kZ0wOYAV/QXpVZl8vLwawxjUY8ailqXF/w3vGN9VOGBev5nYeD1yf+5eeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    body { background-color: #f6f8fb; }
+    .navbar-brand { font-weight: 600; letter-spacing: 0.5px; }
+    footer { background: #0d2a52; color: #fff; }
+    .toast-container { z-index: 1080; }
+  </style>
+  {% block extra_head %}{% endblock %}
 </head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
-  <div class="container">
-    <a class="navbar-brand" href="/">PlacementPrep</a>
-    <div class="collapse navbar-collapse">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="/companies">Companies</a></li>
-        <li class="nav-item"><a class="nav-link" href="/add-experience">Share Experience</a></li>
-        <li class="nav-item"><a class="nav-link" href="/login">Admin Login</a></li>
-      </ul>
+<body class="d-flex flex-column min-vh-100">
+  <header>
+    <nav class="navbar navbar-expand-lg bg-white shadow-sm">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('home') }}">
+          <i class="fa-solid fa-graduation-cap text-primary fs-3"></i>
+          <span class="fw-bold">CAMPUS CONNECT</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">Home</a></li>
+            {% if session.get('student_token') %}
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('companies') }}">Companies</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('resources_page') }}">Resources</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('resumes_page') }}">Resumes</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('announcements_page') }}">Announcements</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('add_experience') }}">Share Experience</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('student_dashboard') }}">Dashboard</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('student_logout') }}">Logout</a></li>
+            {% elif session.get('admin_token') %}
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_logout') }}">Logout</a></li>
+            {% else %}
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Student</a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><a class="dropdown-item" href="{{ url_for('student_login') }}">Login</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('student_register') }}">Register</a></li>
+                </ul>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Admin</a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><a class="dropdown-item" href="{{ url_for('login_page') }}">Login</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('admin_register') }}">Register</a></li>
+                </ul>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="flex-grow-1">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="mt-auto py-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h6 class="text-uppercase">CAMPUS CONNECT</h6>
+          <p class="mb-0">Empowering students for campus success.</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <small>&copy; {{ current_year|default(2025) }} CAMPUS CONNECT. All rights reserved.</small>
+        </div>
+      </div>
     </div>
+  </footer>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        {% set toast_class = 'bg-primary' %}
+        {% if category == 'success' %}{% set toast_class = 'bg-success' %}
+        {% elif category == 'danger' %}{% set toast_class = 'bg-danger' %}
+        {% elif category == 'warning' %}{% set toast_class = 'bg-warning text-dark' %}
+        {% elif category == 'info' %}{% set toast_class = 'bg-info text-dark' %}{% endif %}
+        <div class="toast align-items-center text-white {{ toast_class }} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
+          <div class="d-flex">
+            <div class="toast-body">{{ message }}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+      {% endfor %}
+    {% endwith %}
   </div>
-</nav>
-<div class="container">
-  {% block content %}{% endblock %}
-</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    /**
+     * Initialize page functionality including toasts and form validation
+     */
+    document.addEventListener('DOMContentLoaded', function () {
+      // Show toast notifications
+      document.querySelectorAll('.toast').forEach(function (toastEl) {
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+      });
+
+      // Add loading indicators to form submissions
+      document.querySelectorAll('form:not([data-skip-loading])').forEach(function (form) {
+        form.addEventListener('submit', function (e) {
+          // HTML5 validation - let browser handle it first
+          if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+            form.classList.add('was-validated');
+            return false;
+          }
+
+          // Add loading state to submit button
+          const submitBtn = form.querySelector('button[type="submit"]');
+          if (submitBtn && !submitBtn.dataset.loading) {
+            submitBtn.dataset.loading = 'true';
+            const original = submitBtn.innerHTML;
+            submitBtn.dataset.originalText = original;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Processing...';
+            submitBtn.classList.add('disabled');
+            // Prevent double submission
+            form.dataset.submitting = 'true';
+          }
+        });
+
+        // Remove loading state if form validation fails
+        form.addEventListener('invalid', function (e) {
+          const submitBtn = form.querySelector('button[type="submit"]');
+          if (submitBtn && submitBtn.dataset.loading) {
+            submitBtn.innerHTML = submitBtn.dataset.originalText || 'Submit';
+            submitBtn.classList.remove('disabled');
+            submitBtn.dataset.loading = 'false';
+            form.dataset.submitting = 'false';
+          }
+        }, true);
+      });
+
+      // Enhanced URL validation for URL input fields
+      document.querySelectorAll('input[type="url"]').forEach(function (input) {
+        input.addEventListener('blur', function () {
+          if (this.value && !this.value.match(/^https?:\/\/.+/)) {
+            this.setCustomValidity('Please enter a valid URL starting with http:// or https://');
+          } else {
+            this.setCustomValidity('');
+          }
+        });
+      });
+
+      // Email validation enhancement
+      document.querySelectorAll('input[type="email"]').forEach(function (input) {
+        input.addEventListener('blur', function () {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (this.value && !emailRegex.test(this.value)) {
+            this.setCustomValidity('Please enter a valid email address');
+          } else {
+            this.setCustomValidity('');
+          }
+        });
+      });
+    });
+  </script>
+  {% block extra_scripts %}{% endblock %}
 </body>
 </html>

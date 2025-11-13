@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from .database import engine, Base
-from .routers import auth, companies, experiences, admin, students
+from .routers import auth, companies, experiences, admin, students, content
 import logging
 
 # Import models to ensure they are registered
@@ -25,6 +25,7 @@ app.include_router(companies.router)
 app.include_router(experiences.router)
 app.include_router(admin.router)
 app.include_router(students.router)
+app.include_router(content.router)
 
 @app.get("/")
 def read_root():

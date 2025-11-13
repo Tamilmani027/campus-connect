@@ -9,3 +9,6 @@ mysql-connector-python
 python-jose[cryptography]
 passlib[bcrypt]
 python-multipart
+python-magic-bin; platform_system == 'Windows'
+python-magic; platform_system != 'Windows'
+Pillow

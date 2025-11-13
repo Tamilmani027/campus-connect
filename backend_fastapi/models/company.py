@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy.orm import relationship
 from ..database import Base
 
 class Company(Base):
@@ -8,3 +9,8 @@ class Company(Base):
     description = Column(Text, nullable=True)
     website = Column(String(255), nullable=True)
     sector = Column(String(100), nullable=True)
+    logo_file_id = Column(Integer, ForeignKey('file_storage.id'), nullable=True)
+    profile_doc_id = Column(Integer, ForeignKey('file_storage.id'), nullable=True)
+    
+    logo = relationship("FileStorage", foreign_keys=[logo_file_id], uselist=False)
+    profile_doc = relationship("FileStorage", foreign_keys=[profile_doc_id], uselist=False)

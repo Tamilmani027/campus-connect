@@ -26,5 +26,5 @@ def login(payload: AdminAuth, db: Session = Depends(get_db)):
     admin = db.query(Admin).filter(Admin.username == payload.username).first()
     if not admin or not verify_password(payload.password, admin.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    access_token = create_access_token({"sub": admin.username}, expires_delta=timedelta(hours=24))
+    access_token = create_access_token({"sub": admin.username, "role": "admin", "aid": admin.id}, expires_delta=timedelta(hours=24))
     return {"access_token": access_token, "token_type": "bearer"}

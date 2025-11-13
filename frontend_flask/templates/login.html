@@ -1,16 +1,26 @@
 {% extends "base.html" %}
-{% block title %}Admin Login{% endblock %}
+{% block title %}Admin Login | CAMPUS CONNECT{% endblock %}
 {% block content %}
-<h2>Admin Login (for approving experiences)</h2>
-<form method="post" action="/admin-login">
-  <div class="mb-3">
-    <label class="form-label">Username</label>
-    <input name="username" class="form-control" required/>
+
+<div class="container py-5" style="max-width: 520px;">
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+      <h3 class="mb-3">Admin Login</h3>
+      <p class="text-muted small mb-4">Only authorized placement officers can access this panel.</p>
+      <form method="post" action="{{ url_for('admin_login') }}" novalidate>
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input name="username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input name="password" type="password" class="form-control" minlength="6" required>
+        </div>
+        <button class="btn btn-primary w-100" type="submit">Login</button>
+        <p class="small text-muted mt-3">Need an account? <a href="{{ url_for('admin_register') }}">Register here</a>.</p>
+      </form>
+    </div>
   </div>
-  <div class="mb-3">
-    <label class="form-label">Password</label>
-    <input name="password" type="password" class="form-control" required/>
-  </div>
-  <button class="btn btn-primary" type="submit">Login</button>
-</form>
+</div>
+
 {% endblock %}

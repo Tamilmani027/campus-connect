@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 class ExperienceCreate(BaseModel):
-    student_name: str
+    student_name: Optional[str] = None
     department: Optional[str] = None
     batch: Optional[int] = None
     company_id: int

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Announcements | CAMPUS CONNECT{% endblock %}
+{% block content %}
+
+<section class="py-4">
+  <div class="container">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+      <div>
+        <h2 class="fw-semibold mb-1">Placement Announcements</h2>
+        <p class="text-muted mb-0">Stay updated with recruitment drives, workshops, and critical notices.</p>
+      </div>
+    </div>
+
+    <div class="list-group shadow-sm">
+      {% if announcements %}
+        {% for item in announcements %}
+          <div class="list-group-item">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <h5 class="mb-1">{{ item.title }}</h5>
+                <p class="mb-1 text-muted">{{ item.content }}</p>
+              </div>
+              <span class="badge bg-primary rounded-pill align-self-center">{{ loop.revindex }}</span>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="list-group-item">
+          <p class="mb-0 text-muted">No announcements yet. Keep an eye on this space for updates from the placement cell.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+

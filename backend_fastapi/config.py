@@ -1,16 +1,22 @@
-import os
+from pathlib import Path
 from pydantic_settings import BaseSettings
 
+# Get the directory where this config file is located
+BASE_DIR = Path(__file__).parent
+ENV_FILE = BASE_DIR / ".env"
+
 class Settings(BaseSettings):
-    MYSQL_USER: str = os.getenv("MYSQL_USER", "root")
-    MYSQL_PASSWORD: str = os.getenv("MYSQL_PASSWORD", "password")
-    MYSQL_HOST: str = os.getenv("MYSQL_HOST", "127.0.0.1")
-    MYSQL_PORT: str = os.getenv("MYSQL_PORT", "3306")
-    MYSQL_DB: str = os.getenv("MYSQL_DB", "placement_portal")
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "supersecretkey")
+    """Application settings loaded from environment variables or .env file."""
+    MYSQL_USER: str = "root"
+    MYSQL_PASSWORD: str = "password"
+    MYSQL_HOST: str = "127.0.0.1"
+    MYSQL_PORT: str = "3306"
+    MYSQL_DB: str = "placement_portal"
+    SECRET_KEY: str = "supersecretkey"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60*24
 
     class Config:
-        env_file = ".env"
+        env_file = str(ENV_FILE) if ENV_FILE.exists() else ".env"
+        env_file_encoding = "utf-8"
 
 settings = Settings()

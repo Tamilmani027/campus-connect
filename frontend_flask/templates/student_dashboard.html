@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard | CAMPUS CONNECT{% endblock %}
+{% block content %}
+
+<section class="py-4">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-12 col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">Welcome back{% if profile %}, {{ profile.name }}{% endif %}</h5>
+            <p class="text-muted small mb-3">Keep your preparation on track using resources curated by the placement team.</p>
+            <ul class="list-unstyled small mb-4">
+              <li><i class="fa-solid fa-building-columns text-primary me-2"></i>Department: {{ profile.department or 'Not updated' if profile else 'Not available' }}</li>
+              <li><i class="fa-solid fa-user-check text-primary me-2"></i>Batch: {{ profile.batch or 'Not updated' if profile else 'Not available' }}</li>
+              <li><i class="fa-solid fa-envelope text-primary me-2"></i>{{ profile.email if profile else 'Email not available' }}</li>
+            </ul>
+            <div class="d-grid gap-2">
+              <a href="{{ url_for('add_experience') }}" class="btn btn-primary">Share Interview Experience</a>
+              <a href="{{ url_for('student_logout') }}" class="btn btn-outline-secondary">Logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-8">
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-header bg-white">Latest Announcements</div>
+          <div class="card-body">
+            {% if announcements %}
+              <ul class="list-group list-group-flush">
+                {% for item in announcements[:3] %}
+                  <li class="list-group-item">
+                    <h6 class="mb-1">{{ item.title }}</h6>
+                    <p class="small mb-0 text-muted">{{ item.content }}</p>
+                  </li>
+                {% endfor %}
+              </ul>
+              <a href="{{ url_for('announcements_page') }}" class="btn btn-link btn-sm mt-2">View all announcements</a>
+            {% else %}
+              <p class="text-muted mb-0">No announcements yet.</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <span>Practice Resources</span>
+            <a href="{{ url_for('resources_page') }}" class="btn btn-sm btn-outline-primary">Browse All</a>
+          </div>
+          <div class="card-body">
+            {% if resources %}
+              <div class="row g-3">
+                {% for resource in resources[:4] %}
+                  <div class="col-12 col-md-6">
+                    <div class="border rounded-3 p-3 h-100">
+                      <h6 class="mb-1">{{ resource.title }}</h6>
+                      <p class="small text-muted mb-2">{{ resource.description or 'Shared by placement cell' }}</p>
+                      <a href="{{ resource.url }}" target="_blank" rel="noopener" class="btn btn-sm btn-primary">Open</a>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <p class="text-muted mb-0">Resources will appear here once published.</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <span>Resume Templates</span>
+            <a href="{{ url_for('resumes_page') }}" class="btn btn-sm btn-outline-primary">View All</a>
+          </div>
+          <div class="card-body">
+            {% if resumes %}
+              <div class="row g-3">
+                {% for resume in resumes[:4] %}
+                  <div class="col-12 col-md-6">
+                    <div class="border rounded-3 p-3 h-100 text-center">
+                      <i class="fa-solid fa-file-pdf fa-2x text-danger mb-2"></i>
+                      <h6 class="mb-2">{{ resume.title }}</h6>
+                      <a href="{{ resume.url }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">Download</a>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <p class="text-muted mb-0">Resume templates will be listed here once available.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mt-4">
+      <div class="card-header bg-white">Recently Approved Experiences</div>
+      <div class="card-body">
+        {% if experiences %}
+          <div class="row g-3">
+            {% for exp in experiences[:6] %}
+              {% set comp = company_lookup.get(exp.company_id) if company_lookup else None %}
+              <div class="col-12 col-md-6 col-xl-4">
+                <div class="border rounded-3 p-3 h-100">
+                  <h6 class="mb-1">{{ comp.name if comp else ('Company #' ~ exp.company_id) }}{% if exp.role %} &middot; {{ exp.role }}{% endif %}</h6>
+                  <p class="small text-muted mb-2">Shared by {{ exp.student_name }}</p>
+                  <p class="small mb-2">{{ exp.experience_text[:140] }}{% if exp.experience_text|length > 140 %}...{% endif %}</p>
+                  <a href="{{ url_for('company_detail', company_id=exp.company_id) }}" class="btn btn-sm btn-outline-primary">View Details</a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">Approved experiences will be displayed once available.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
