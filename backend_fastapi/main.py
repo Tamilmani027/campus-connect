@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from .database import engine, Base
 from .routers import auth, companies, experiences, admin, students, content
 import logging
@@ -7,6 +8,14 @@ import logging
 from . import models  # ensures models are imported
 
 app = FastAPI(title="Placement Portal API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Replace with your frontend URL in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 logger = logging.getLogger(__name__)
 

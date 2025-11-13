@@ -553,10 +553,13 @@ def admin_announcement_delete(aid: int):
     flash("Announcement removed" if r.status_code == 200 else f"Failed: {r.text}", "success" if r.status_code == 200 else "danger")
     return redirect(url_for("admin_dashboard"))
 
+import os
+
 if __name__ == "__main__":
     # Ensure we can find templates and static files when running directly
-    import os
     if not os.path.exists("templates"):
-        # If running from project root, change to frontend_flask directory
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    app.run(port=5000, debug=True)
+
+    # Use Render's dynamic PORT environment variable
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
