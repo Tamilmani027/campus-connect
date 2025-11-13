@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from database import engine, Base
+from database import engine
+from database import Base
 from routers import auth, companies, experiences, admin, students, content
 import logging
 

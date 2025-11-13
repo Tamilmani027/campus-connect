@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, File, Form, UploadFile, Request
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from ..database import get_db
-from ..models.interview_experience import InterviewExperience
-from ..models.company import Company
-from ..models.content import Resource, ResumeSample, Announcement
-from ..models.file_storage import FileStorage
-from ..schemas.content import ResourceCreate, ResourceOut, ResumeCreate, ResumeOut, AnnouncementCreate, AnnouncementOut
-from ..utils.dependencies import require_admin
-from ..utils.file_handler import save_upload_file, delete_file
+from database import get_db
+from models.interview_experience import InterviewExperience
+from models.company import Company
+from models.content import Resource, ResumeSample, Announcement
+from models.file_storage import FileStorage
+from schemas.content import ResourceCreate, ResourceOut, ResumeCreate, ResumeOut, AnnouncementCreate, AnnouncementOut
+from utils.dependencies import require_admin
+from utils.file_handler import save_upload_file, delete_file
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
