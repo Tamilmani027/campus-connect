@@ -1,7 +1,7 @@
 from fastapi import Header, HTTPException, Depends
 from sqlalchemy.orm import Session
 from database import get_db
-from .jwt_handler import verify_token
+from jwt_handler import verify_token
 from models.student import Student
 
 

@@ -1,7 +1,7 @@
 from pydantic import BaseModel, AnyUrl
 from typing import Optional
 from datetime import datetime
-from .file_storage import FileStorageOut
+from file_storage import FileStorageOut
 
 class ResourceCreate(BaseModel):
     title: str
