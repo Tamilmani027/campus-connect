@@ -1,11 +1,20 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .database import engine, Base
-from .routers import auth, companies, experiences, admin, students, content
 import logging
 
-# Import models to ensure they are registered
-from . import models  # ensures models are imported
+# Import database and routers with a fallback so the module works both when
+# imported as a package and when executed in environments that don't set
+# the package context (e.g. some hosting platforms invoking the module).
+try:
+	from .database import engine, Base
+	from .routers import auth, companies, experiences, admin, students, content
+	# Import models to ensure they are registered
+	from . import models  # ensures models are imported
+except Exception:
+	from backend_fastapi.database import engine, Base
+	from backend_fastapi.routers import auth, companies, experiences, admin, students, content
+	# Import models to ensure they are registered
+	import backend_fastapi.models as models
 
 app = FastAPI(title="Placement Portal API")
 
@@ -39,3 +48,8 @@ app.include_router(content.router)
 @app.get("/")
 def read_root():
 	return {"msg": "Placement Portal API — FastAPI backend running"}
+
+
+@app.get("/health")
+def health_check():
+	return {"status": "ok"}

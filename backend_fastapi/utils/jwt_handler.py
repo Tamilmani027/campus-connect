@@ -1,7 +1,10 @@
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import jwt
-from ..config import settings
+try:
+    from ..config import settings
+except Exception:
+    from backend_fastapi.config import settings
 
 ALGORITHM = "HS256"
 
