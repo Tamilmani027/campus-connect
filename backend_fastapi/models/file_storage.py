@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, func
-from backend_fastapi.database import Base
+from ..database import Base
 
 class FileStorage(Base):
     __tablename__ = "file_storage"

@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Float
 from sqlalchemy.orm import relationship
-from backend_fastapi.database import Base
+from ..database import Base
 
 class CompanyHistory(Base):
     __tablename__ = "company_history"

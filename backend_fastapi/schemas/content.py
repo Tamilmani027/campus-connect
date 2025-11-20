@@ -1,7 +1,7 @@
 from pydantic import BaseModel, AnyUrl
 from typing import Optional
 from datetime import datetime
-from backend_fastapi.schemas.file_storage import FileStorageOut
+from .file_storage import FileStorageOut
 
 class ResourceCreate(BaseModel):
     title: str

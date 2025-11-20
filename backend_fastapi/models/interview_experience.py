@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, Enum
 from sqlalchemy.orm import relationship
-from backend_fastapi.database import Base
+from ..database import Base
 
 class InterviewExperience(Base):
     __tablename__ = "interview_experiences"

@@ -2,6 +2,7 @@
 
 ## Prerequisites
 - Python 3.9+
+
 - MySQL server
 - (Optional) virtualenv
 
@@ -17,8 +18,20 @@
    - create a `.env` or export env vars:
      MYSQL_USER, MYSQL_PASSWORD, MYSQL_HOST, MYSQL_PORT, MYSQL_DB, SECRET_KEY   
    - Run:
-     `python -m uvicorn backend_fastapi.main:app --reload --port 8000`
-     (On Windows, if `uvicorn` command is not found, use `python -m uvicorn` instead)
+      `python -m uvicorn backend_fastapi.main:app --reload --port 8000`
+      (On Windows, if `uvicorn` command is not found, use `python -m uvicorn` instead)
+
+  Deployment note (Render.com / other hosts):
+
+  - If your host cannot import the `backend_fastapi` package due to PYTHONPATH differences, use the provided top-level `app.py` as the entrypoint. Example start command for Render or a Procfile:
+
+    - Uvicorn directly:
+      `python -m uvicorn app:app --host 0.0.0.0 --port $PORT`
+
+    - Or with Gunicorn + Uvicorn workers (recommended for production):
+      `gunicorn -k uvicorn.workers.UvicornWorker app:app --bind 0.0.0.0:$PORT`
+
+  This wrapper ensures the repository root is on `sys.path` so package imports like `backend_fastapi.*` resolve correctly.
    - (optional) Create an admin:
      POST `/auth/create-admin` with JSON `{"username":"admin","password":"password"}`
 

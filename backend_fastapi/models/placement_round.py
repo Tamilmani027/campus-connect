@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from backend_fastapi.database import Base
+from ..database import Base
 
 class PlacementRound(Base):
     __tablename__ = "placement_rounds"

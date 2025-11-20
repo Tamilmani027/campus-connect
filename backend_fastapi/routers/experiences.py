@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from backend_fastapi.database import get_db
-from backend_fastapi.models.interview_experience import InterviewExperience
-from backend_fastapi.models.student import Student
-from backend_fastapi.schemas.experience import ExperienceCreate, ExperienceOut
-from backend_fastapi.utils.dependencies import get_current_student
+from ..database import get_db
+from ..models.interview_experience import InterviewExperience
+from ..models.student import Student
+from ..schemas.experience import ExperienceCreate, ExperienceOut
+from ..utils.dependencies import get_current_student
 
 router = APIRouter(prefix="/experiences", tags=["experiences"])
 
