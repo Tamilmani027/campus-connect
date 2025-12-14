@@ -1,5 +1,41 @@
 # Placement Preparation Portal (FastAPI + Flask + MySQL)
 
+## Project Overview
+The Placement Preparation Portal is a comprehensive, full-stack web application designed to streamline campus placement preparation. Built with a high-performance **FastAPI** backend and a dynamic **Flask** frontend, the platform bridges the gap between students and resources. It offers a structured environment for students to master aptitude, coding, and soft skills, while providing administrators with powerful tools to manage content and track engagement.
+
+## Key Features
+
+### 🎓 Student Role
+*   **Interactive Dashboard**
+    *   Centralized hub for aptitude, coding, interview prep, and HR resources.
+    *   Access company-specific preparation guides and skill roadmaps.
+*   **Coding & DSA Arena**
+    *   Extensive repository of coding questions categorized by company.
+    *   Difficulty-tiered problems (Easy / Medium / Hard) with detailed solutions and explanations.
+*   **Communication & HR Prep**
+    *   Curated database of 50+ HR interview questions with model answers.
+    *   Guides on soft skills and body language for professional impact.
+*   **Collaborative Discussion Forum**
+    *   Platform for peer-to-peer learning and doubt resolution.
+    *   Dedicated threads for company-specific discussions.
+*   **Smart Study Planner**
+    *   Customizable study roadmaps (30-day / 60-day / 90-day).
+    *   Daily progress tracking with interactive checklists.
+*   **Bookmarks & Saved Items**
+    *   Save feature for refined revision of interview experiences, DSA questions, and notes.
+
+### 🛠️ Admin Role
+*   **Analytics Dashboard**
+    *   Overview of student engagement metrics and content statistics.
+*   **Company Material Management**
+    *   Create and manage company profiles.
+    *   Upload Previous Year Questions (PYQs) and fresh coding/aptitude sets.
+*   **Content Management System (CMS)**
+    *   **Aptitude**: Manage quantitative, logical, and verbal ability questions.
+    *   **Coding**: Add DSA questions with test cases and curated practice sheets.
+*   **Resource Repository**
+    *   Upload and organize learning materials including PDF notes, cheat sheets, video links, and PPTs.
+
 ## Prerequisites
 - Python 3.9+
 

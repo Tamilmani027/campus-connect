@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% block title %}{{ question.title }} | Practice{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Problem Description -->
+    <div class="col-md-5">
+        <div class="card mb-3">
+            <div class="card-body">
+                <span
+                    class="badge bg-{{ 'success' if question.difficulty == 'EASY' else 'warning' if question.difficulty == 'MEDIUM' else 'danger' }} mb-2">{{
+                    question.difficulty }}</span>
+                <span class="badge bg-info text-dark mb-2">{{ question.type }}</span>
+
+                <h3>{{ question.title }}</h3>
+                <hr>
+                <div class="problem-description">
+                    {{ question.description | safe }}
+                </div>
+
+                {% if question.company_tags %}
+                <div class="mt-3">
+                    <strong>Companies:</strong>
+                    {% for tag in question.company_tags.split(',') %}
+                    <span class="badge bg-light text-dark border">{{ tag.strip() }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Interaction Area -->
+    <div class="col-md-7">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Solution / Workspace</span>
+                <button class="btn btn-outline-warning btn-sm" id="bookmarkBtn" data-type="question"
+                    data-id="{{ question.id }}">
+                    <i class="fa-regular fa-bookmark"></i> Bookmark
+                </button>
+            </div>
+            <div class="card-body">
+
+                {% if question.type == 'CODING' %}
+                <!-- Simple Code Editor Placeholder -->
+                <div class="mb-3">
+                    <label for="code-editor" class="form-label">Your Code</label>
+                    <textarea class="form-control font-monospace" id="code-editor" rows="15"
+                        placeholder="// Write your solution here...">{{ progress.submission_code or '' }}</textarea>
+                </div>
+                <button class="btn btn-primary" onclick="submitProgress('{{ question.id }}', 'SOLVED')">Mark as
+                    Solved</button>
+
+                {% elif question.type == 'APTITUDE' %}
+                <!-- Options -->
+                <form id="aptitude-form">
+                    {% for key, val in question.options.items() %}
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="aptitudeOption" id="opt-{{ key }}"
+                            value="{{ key }}">
+                        <label class="form-check-label" for="opt-{{ key }}">
+                            <strong>{{ key }}:</strong> {{ val }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </form>
+                <div class="mt-3" id="aptitude-result" style="display:none;"></div>
+                <button class="btn btn-success mt-3" onclick="checkAptitude('{{ question.correct_option }}')">Check
+                    Answer</button>
+
+                {% elif question.type == 'HR' %}
+                <div class="mb-3">
+                    <label class="form-label">Your Answer / Notes</label>
+                    <textarea class="form-control" id="hr-notes" rows="10"
+                        placeholder="Type your answer here for self-review...">{{ progress.user_notes or '' }}</textarea>
+                </div>
+                <button class="btn btn-primary" onclick="saveNotes('{{ question.id }}')">Save Notes</button>
+                <div class="mt-4">
+                    <h5>Sample Answer</h5>
+                    <div class="alert alert-secondary">
+                        {{ question.solution }}
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function sendUpdate(qid, data) {
+        try {
+            const resp = await fetch("/practice/api/progress", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question_id: qid, ...data })
+            });
+            const res = await resp.json();
+            if (res.status === "success") {
+                // Optional: Show toast
+            } else {
+                alert("Error saving progress: " + res.message);
+            }
+            return res;
+        } catch (e) {
+            console.error(e);
+            alert("Network error");
+        }
+    }
+
+    // Check bookmark status on load
+    document.addEventListener('DOMContentLoaded', function () {
+        const btn = document.getElementById('bookmarkBtn');
+        if (btn) {
+            const type = btn.dataset.type;
+            const id = btn.dataset.id;
+            checkBookmarkStatus(type, id);
+            btn.addEventListener('click', function () {
+                toggleGenericBookmark(type, id);
+            });
+        }
+    });
+
+    async function checkBookmarkStatus(type, id) {
+        try {
+            const resp = await fetch(`/bookmarks/api/check?type=${type}&id=${id}`);
+            const data = await resp.json();
+            const btn = document.getElementById('bookmarkBtn');
+            if (data.is_bookmarked) {
+                btn.classList.remove('btn-outline-warning');
+                btn.classList.add('btn-warning');
+                btn.innerHTML = '<i class="fa-solid fa-bookmark"></i> Saved';
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    async function toggleGenericBookmark(type, id) {
+        const btn = document.getElementById('bookmarkBtn');
+        // Optimistic UI update
+        const isActive = btn.classList.contains('btn-warning');
+
+        if (isActive) {
+            btn.classList.remove('btn-warning');
+            btn.classList.add('btn-outline-warning');
+            btn.innerHTML = '<i class="fa-regular fa-bookmark"></i> Bookmark';
+        } else {
+            btn.classList.remove('btn-outline-warning');
+            btn.classList.add('btn-warning');
+            btn.innerHTML = '<i class="fa-solid fa-bookmark"></i> Saved';
+        }
+
+        try {
+            const resp = await fetch("/bookmarks/api/toggle", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ type: type, id: id })
+            });
+            const data = await resp.json();
+            if (data.status === 'error') {
+                alert("Error: " + data.message);
+                // Revert UI
+                if (isActive) {
+                    btn.classList.add('btn-warning');
+                    btn.classList.remove('btn-outline-warning');
+                    btn.innerHTML = '<i class="fa-solid fa-bookmark"></i> Saved';
+                } else {
+                    btn.classList.remove('btn-warning');
+                    btn.classList.add('btn-outline-warning');
+                    btn.innerHTML = '<i class="fa-regular fa-bookmark"></i> Bookmark';
+                }
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Network error");
+        }
+    }
+
+    async function submitProgress(qid, status) {
+        const code = document.getElementById('code-editor').value;
+        const res = await sendUpdate(qid, { status: status, submission_code: code });
+        if (res && res.status === "success") {
+            alert("Code saved and marked as " + status);
+        }
+    }
+
+    function checkAptitude(correct) {
+        const selected = document.querySelector('input[name="aptitudeOption"]:checked');
+        if (!selected) {
+            alert("Please select an option");
+            return;
+        }
+        const resDiv = document.getElementById("aptitude-result");
+        resDiv.style.display = "block";
+        if (selected.value === correct) {
+            resDiv.className = "alert alert-success";
+            resDiv.innerText = "Correct Answer!";
+            // Auto mark as solved
+            const qid = Number("{{ question.id }}");
+        };
+        sendUpdate(qid, { status: "SOLVED" });
+    } else {
+        resDiv.className = "alert alert-danger";
+        resDiv.innerText = "Incorrect. Correct option is " + correct;
+    }
+    }
+
+    async function saveNotes(qid) {
+        const notes = document.getElementById('hr-notes').value;
+        const res = await sendUpdate(qid, { user_notes: notes, status: "SOLVED" });
+        if (res && res.status === "success") {
+            alert("Notes saved successfully");
+        }
+    }
+</script>
+{% endblock %}

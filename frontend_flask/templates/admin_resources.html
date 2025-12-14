@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Manage Resources | Admin{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Add New Resource</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('admin_add_resource') }}" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" name="category">
+                            <option value="GENERAL">General</option>
+                            <option value="CODING">Coding Arena</option>
+                            <option value="APTITUDE">Aptitude</option>
+                            <option value="HR">HR & Communication</option>
+                            <option value="PLANNER">Study Planner</option>
+                            <option value="FORUM">Discussion Forum</option>
+                            <option value="COMPANIES">Company Profiles</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="3"></textarea>
+                    </div>
+
+                    <hr>
+                    <p class="text-muted small">Provide either a Link OR a File (PDF, PPT, Image, etc.)</p>
+
+                    <div class="mb-3">
+                        <label class="form-label">External Link (URL)</label>
+                        <input type="url" class="form-control" name="url" placeholder="https://youtube.com/...">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Upload File</label>
+                        <input type="file" class="form-control" name="file">
+                        <div class="form-text">Supported: PDF, DOC, PPT, Images</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Upload Resource</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Existing Resources</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for res in resources %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ res.title }}</h6>
+                            <small class="text-muted">{{ res.created_at[:10] }}</small>
+                        </div>
+                        <p class="mb-1 small">{{ res.description or '' }}</p>
+
+                        <div class="mb-2">
+                            <span class="badge bg-secondary">{{ res.category or 'GENERAL' }}</span>
+                        </div>
+
+                        <div>
+                            {% if res.file_id %}
+                            <span class="badge bg-success"><i class="bi bi-file-earmark"></i> File</span>
+                            {% endif %}
+
+                            {% if res.url %}
+                            <a href="{{ res.url }}" target="_blank"
+                                class="badge bg-info text-decoration-none text-dark">
+                                <i class="bi bi-link-45deg"></i> Link
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No resources found.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

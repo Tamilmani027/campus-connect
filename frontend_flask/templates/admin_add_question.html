@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Add Question | Admin{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">Add New Question</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('admin_add_question_submit') }}" method="POST">
+
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Type</label>
+                            <select class="form-select" name="type" id="q_type" onchange="toggleFields()" required>
+                                <option value="CODING">Coding / DSA</option>
+                                <option value="APTITUDE">Aptitude</option>
+                                <option value="HR">HR Interview</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Difficulty</label>
+                            <select class="form-select" name="difficulty" required>
+                                <option value="EASY">Easy</option>
+                                <option value="MEDIUM">Medium</option>
+                                <option value="HARD">Hard</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Topic</label>
+                        <input type="text" class="form-control" name="topic" placeholder="e.g. Arrays, Probability">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Company Tags</label>
+                        <input type="text" class="form-control" name="company_tags"
+                            placeholder="e.g. Google, Amazon (comma separated)">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description (Markdown supported)</label>
+                        <textarea class="form-control" name="description" rows="5" required></textarea>
+                    </div>
+
+                    <!-- Aptitude Specific -->
+                    <div id="aptitude_fields" style="display:none;">
+                        <h5>Aptitude Options</h5>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">A</span>
+                            <input type="text" class="form-control" name="opt_a">
+                        </div>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">B</span>
+                            <input type="text" class="form-control" name="opt_b">
+                        </div>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">C</span>
+                            <input type="text" class="form-control" name="opt_c">
+                        </div>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">D</span>
+                            <input type="text" class="form-control" name="opt_d">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Correct Option</label>
+                            <select class="form-select" name="correct_option">
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Coding / General -->
+                    <div id="solution_field">
+                        <div class="mb-3">
+                            <label class="form-label">Solution / Explanation</label>
+                            <textarea class="form-control" name="solution" rows="4"></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Create Question</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleFields() {
+        const type = document.getElementById('q_type').value;
+        const aptFields = document.getElementById('aptitude_fields');
+        if (type === 'APTITUDE') {
+            aptFields.style.display = 'block';
+        } else {
+            aptFields.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}My Bookmarks | Campus Connect{% endblock %}
+
+{% block content %}
+<div class="container section-padding">
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <h1 class="h2 fw-bold">Saved Items</h1>
+            <p class="text-muted">Quick access to your important questions and notes.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for item in bookmarks %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm h-100 hover-scale">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="badge bg-light text-primary border">{{ item.entity_type|replace('_', ' ')|title
+                            }}</span>
+                        <form action="{{ url_for('delete_bookmark', bookmark_id=item.id) }}" method="POST"
+                            class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-link text-danger p-0 border-0"
+                                title="Remove Bookmark">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    {% if item.entity_type == 'question' %}
+                    <h5 class="fw-bold mb-2">Question #{{ item.entity_id }}</h5>
+                    <p class="text-muted small mb-3">Saved question from Practice Arena.</p>
+                    <a href="{{ url_for('practice_question_detail', question_id=item.entity_id) }}"
+                        class="btn btn-sm btn-outline-primary w-100">Solve Now</a>
+
+                    {% elif item.entity_type == 'interview_experience' %}
+                    <h5 class="fw-bold mb-2">Experience #{{ item.entity_id }}</h5>
+                    <p class="text-muted small mb-3">Interview experience reference.</p>
+                    <!-- We might need a direct link to experience detail if implemented -->
+                    <a href="{{ url_for('company_detail', company_id=1) }}"
+                        class="btn btn-sm btn-outline-primary w-100">View Experience</a>
+                    <!-- Note: linking to specific exp might require new route, defaulting to safe link -->
+
+                    {% else %}
+                    <h5 class="fw-bold mb-2">Resource #{{ item.entity_id }}</h5>
+                    <a href="{{ url_for('resources_page') }}" class="btn btn-sm btn-outline-primary w-100">Go to
+                        Resources</a>
+                    {% endif %}
+
+                    {% if item.note %}
+                    <div class="mt-3 p-2 bg-light rounded border small">
+                        <i class="fa-solid fa-sticky-note text-warning me-1"></i> {{ item.note }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5">
+            <div class="mb-3">
+                <i class="fa-regular fa-bookmark fa-3x text-muted opacity-25"></i>
+            </div>
+            <h4>No bookmarks yet</h4>
+            <p class="text-muted">Save questions and pages to access them quickly here.</p>
+            <a href="{{ url_for('practice_page') }}" class="btn btn-primary mt-2">Start Practicing</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

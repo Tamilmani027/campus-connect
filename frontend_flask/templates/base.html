@@ -1,19 +1,22 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8"/>
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>{% block title %}CAMPUS CONNECT{% endblock %}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-+sR8lNqLxBH03wqzuoXRxVf1ygY9kZ0wOYAV/QXpVZl8vLwawxjUY8ailqXF/w3vGN9VOGBev5nYeD1yf+5eeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-+sR8lNqLxBH03wqzuoXRxVf1ygY9kZ0wOYAV/QXpVZl8vLwawxjUY8ailqXF/w3vGN9VOGBev5nYeD1yf+5eeg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
   <style>
-    body { background-color: #f6f8fb; }
-    .navbar-brand { font-weight: 600; letter-spacing: 0.5px; }
-    footer { background: #0d2a52; color: #fff; }
-    .toast-container { z-index: 1080; }
+    /* Inline overrides if strictly necessary */
   </style>
   {% block extra_head %}{% endblock %}
 </head>
+
 <body class="d-flex flex-column min-vh-100">
   <header>
     <nav class="navbar navbar-expand-lg bg-white shadow-sm">
@@ -22,38 +25,80 @@
           <i class="fa-solid fa-graduation-cap text-primary fs-3"></i>
           <span class="fw-bold">CAMPUS CONNECT</span>
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">Home</a></li>
+            <!-- Common Links -->
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}"><i class="fa-solid fa-home me-1"></i>
+                Home</a></li>
+
             {% if session.get('student_token') %}
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('companies') }}">Companies</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('resources_page') }}">Resources</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('resumes_page') }}">Resumes</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('announcements_page') }}">Announcements</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('add_experience') }}">Share Experience</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('student_dashboard') }}">Dashboard</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('student_logout') }}">Logout</a></li>
+            <!-- Student Links -->
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('student_dashboard') }}"><i
+                  class="fa-solid fa-chart-line me-1"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('companies') }}"><i
+                  class="fa-solid fa-building me-1"></i> Companies</a></li>
+
+            <!-- Dropdown for Prep -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"><i
+                  class="fa-solid fa-book-open me-1"></i> Prep</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{ url_for('resources_page') }}">Resources</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('practice_page') }}?type=CODING">Coding Area</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('practice_page') }}?type=APTITUDE">Aptitude</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('practice_page') }}?type=HR">HR Prep</a></li>
+              </ul>
+            </li>
+
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('forum_page') }}"><i
+                  class="fa-solid fa-comments me-1"></i> Forum</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('study_planner_page') }}"><i
+                  class="fa-solid fa-calendar-check me-1"></i> Plan</a></li>
+
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"><i
+                  class="fa-solid fa-user-circle me-1"></i> Account</a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{{ url_for('bookmarks') }}">Bookmarks</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('add_experience') }}">Share Experience</a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item text-danger" href="{{ url_for('student_logout') }}">Logout</a></li>
+              </ul>
+            </li>
+
             {% elif session.get('admin_token') %}
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_logout') }}">Logout</a></li>
+            <!-- Admin Links -->
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard') }}"><i
+                  class="fa-solid fa-tachometer-alt me-1"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_resources_page') }}"><i
+                  class="fa-solid fa-folder-open me-1"></i> Resources</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_add_question_page') }}"><i
+                  class="fa-solid fa-plus-circle me-1"></i> Add Content</a></li>
+            <li class="nav-item"><a class="nav-link text-danger" href="{{ url_for('admin_logout') }}"><i
+                  class="fa-solid fa-sign-out-alt me-1"></i> Logout</a></li>
             {% else %}
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Student</a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li><a class="dropdown-item" href="{{ url_for('student_login') }}">Login</a></li>
-                  <li><a class="dropdown-item" href="{{ url_for('student_register') }}">Register</a></li>
-                </ul>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Admin</a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li><a class="dropdown-item" href="{{ url_for('login_page') }}">Login</a></li>
-                  <li><a class="dropdown-item" href="{{ url_for('admin_register') }}">Register</a></li>
-                </ul>
-              </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">Student</a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{{ url_for('student_login') }}">Login</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('student_register') }}">Register</a></li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">Admin</a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{{ url_for('login_page') }}">Login</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('admin_register') }}">Register</a></li>
+              </ul>
+            </li>
             {% endif %}
           </ul>
         </div>
@@ -81,19 +126,21 @@
 
   <div class="toast-container position-fixed bottom-0 end-0 p-3">
     {% with messages = get_flashed_messages(with_categories=true) %}
-      {% for category, message in messages %}
-        {% set toast_class = 'bg-primary' %}
-        {% if category == 'success' %}{% set toast_class = 'bg-success' %}
-        {% elif category == 'danger' %}{% set toast_class = 'bg-danger' %}
-        {% elif category == 'warning' %}{% set toast_class = 'bg-warning text-dark' %}
-        {% elif category == 'info' %}{% set toast_class = 'bg-info text-dark' %}{% endif %}
-        <div class="toast align-items-center text-white {{ toast_class }} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
-          <div class="d-flex">
-            <div class="toast-body">{{ message }}</div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-          </div>
-        </div>
-      {% endfor %}
+    {% for category, message in messages %}
+    {% set toast_class = 'bg-primary' %}
+    {% if category == 'success' %}{% set toast_class = 'bg-success' %}
+    {% elif category == 'danger' %}{% set toast_class = 'bg-danger' %}
+    {% elif category == 'warning' %}{% set toast_class = 'bg-warning text-dark' %}
+    {% elif category == 'info' %}{% set toast_class = 'bg-info text-dark' %}{% endif %}
+    <div class="toast align-items-center text-white {{ toast_class }} border-0" role="alert" aria-live="assertive"
+      aria-atomic="true" data-bs-delay="4000">
+      <div class="d-flex">
+        <div class="toast-body">{{ message }}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+          aria-label="Close"></button>
+      </div>
+    </div>
+    {% endfor %}
     {% endwith %}
   </div>
 
@@ -171,4 +218,5 @@
   </script>
   {% block extra_scripts %}{% endblock %}
 </body>
+
 </html>

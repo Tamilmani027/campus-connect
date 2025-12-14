@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Practice Arena | CAMPUS CONNECT{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2>Practice Arena</h2>
+        <p class="text-muted">Master your skills with our curated problem sets.</p>
+    </div>
+</div>
+
+<!-- Category Tabs -->
+<ul class="nav nav-tabs mb-4" id="practiceTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="coding-tab" data-bs-toggle="tab" data-bs-target="#coding" type="button"
+            role="tab">Coding / DSA</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="aptitude-tab" data-bs-toggle="tab" data-bs-target="#aptitude" type="button"
+            role="tab">Aptitude</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="hr-tab" data-bs-toggle="tab" data-bs-target="#hr" type="button" role="tab">HR
+            Interview</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="practiceTabsContent">
+    <!-- CODING TAB -->
+    <div class="tab-pane fade show active" id="coding" role="tabpanel">
+        <div class="d-flex justify-content-between mb-3">
+            <div>
+                <select class="form-select w-auto d-inline-block" onchange="filterQuestions('CODING', this.value)">
+                    <option value="">All Difficulties</option>
+                    <option value="EASY">Easy</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HARD">Hard</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="coding-list" class="list-group">
+            {% for q in questions if q.type == 'CODING' %}
+            <a href="/practice/question/{{ q.id }}"
+                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-1">{{ q.title }}</h5>
+                    <span
+                        class="badge bg-{{ 'success' if q.difficulty == 'EASY' else 'warning' if q.difficulty == 'MEDIUM' else 'danger' }}">{{
+                        q.difficulty }}</span>
+                    <small class="text-muted">{{ q.topic or 'General' }}</small>
+                </div>
+                <!-- Status Icon (Placeholder) -->
+                <i class="bi bi-circle"></i>
+            </a>
+            {% else %}
+            <div class="alert alert-info">No coding questions available yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- APTITUDE TAB -->
+    <div class="tab-pane fade" id="aptitude" role="tabpanel">
+        <div id="aptitude-list" class="list-group">
+            {% for q in questions if q.type == 'APTITUDE' %}
+            <a href="/practice/question/{{ q.id }}" class="list-group-item list-group-item-action">
+                <h5 class="mb-1">{{ q.title }}</h5>
+                <span class="badge bg-secondary">{{ q.topic }}</span>
+            </a>
+            {% else %}
+            <div class="alert alert-info">No aptitude questions available yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- HR TAB -->
+    <div class="tab-pane fade" id="hr" role="tabpanel">
+        <div class="row">
+            {% for q in questions if q.type == 'HR' %}
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ q.title }}</h5>
+                        <p class="card-text text-muted">{{ q.description[:100] }}...</p>
+                        <a href="/practice/question/{{ q.id }}" class="btn btn-outline-primary btn-sm">Practice</a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12">
+                <div class="alert alert-info">No HR questions available yet.</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

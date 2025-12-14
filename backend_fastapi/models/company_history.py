@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Float
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from ..database import Base
 
 class CompanyHistory(Base):
@@ -12,4 +12,4 @@ class CompanyHistory(Base):
     rounds_count = Column(Integer, default=0)
     eligibility = Column(String(255), nullable=True)
 
-    company = relationship("Company", backref="history")
+    company = relationship("Company", backref=backref("history", cascade="all, delete-orphan"))

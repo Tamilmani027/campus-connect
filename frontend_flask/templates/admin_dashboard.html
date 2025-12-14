@@ -2,42 +2,135 @@
 {% block title %}Admin Dashboard | CAMPUS CONNECT{% endblock %}
 {% block content %}
 
-<div class="container py-4">
+<div class="container section-padding">
   <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
     <div>
       <h2 class="fw-semibold mb-1">Admin Dashboard</h2>
-      <p class="text-muted mb-0">Approve interview experiences, manage company data, and publish resources for students.</p>
+      <p class="text-muted mb-0">Approve interview experiences, manage company data, and publish resources for students.
+      </p>
     </div>
     <a href="{{ url_for('admin_logout') }}" class="btn btn-outline-danger">Logout</a>
   </div>
 
+  <!-- Analytics Section -->
+  {% if analytics and analytics.sectors %}
+  <div class="row g-4 mb-4">
+    <div class="col-12 col-md-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-header bg-white">Company Sectors</div>
+        <div class="card-body">
+          <canvas id="sectorChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-header bg-white">Placement Trends</div>
+        <div class="card-body">
+          <canvas id="trendChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Sector Chart
+      new Chart(document.getElementById('sectorChart'), {
+        type: 'pie',
+        data: {
+          labels: {{ analytics.sectors | map(attribute = 'label') | list | tojson }},
+      datasets: [{
+        data: {{ analytics.sectors | map(attribute = 'count') | list | tojson }},
+      backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b']
+          }]
+        }
+      });
+    // Trend Chart
+    new Chart(document.getElementById('trendChart'), {
+      type: 'bar',
+      data: {
+        labels: {{ analytics.trends | map(attribute = 'year') | list | tojson }},
+      datasets: [{
+        label: 'Students Placed',
+        data: {{ analytics.trends | map(attribute = 'placed') | list | tojson }},
+      backgroundColor: '#4e73df'
+          }]
+        },
+      options: { scales: { y: { beginAtZero: true } } }
+      });
+    });
+  </script>
+  {% endif %}
+
   <div class="row g-4">
     <div class="col-12 col-lg-7">
-      <div class="card shadow-sm border-0 mb-4">
+
+      <!-- Placement Drives Management -->
+      <div class="card shadow-sm border-0 mb-4 hover-scale">
+        <div class="card-header bg-success text-white">Create Placement Drive</div>
+        <div class="card-body">
+          <form method="POST" action="/admin/drive/create" class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label">Company</label>
+              <select name="company_id" class="form-select" required>
+                {% for c in companies %}
+                <option value="{{ c.id }}">{{ c.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Batch</label>
+              <input type="number" name="batch" class="form-control" value="2025" required>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Role</label>
+              <input type="text" name="role" class="form-control" placeholder="e.g. SDE" required>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Date</label>
+              <input type="datetime-local" name="date" class="form-control" required>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Deadline</label>
+              <input type="datetime-local" name="deadline" class="form-control" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Eligibility</label>
+              <input type="text" name="eligibility_criteria" class="form-control" placeholder="e.g. CGPA > 7.0">
+            </div>
+            <div class="col-12">
+              <button class="btn btn-success w-100">Publish Drive</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="card shadow-sm border-0 mb-4 hover-scale">
         <div class="card-header bg-primary text-white">
           Pending Interview Experiences
         </div>
         <div class="card-body">
           {% if pending and pending|length %}
-            <div class="list-group list-group-flush">
-              {% for exp in pending %}
-                <div class="list-group-item">
-                  <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
-                    <div>
-                      <h6 class="mb-1">{{ exp.student_name }} &mdash; {{ exp.role or 'Role not specified' }}</h6>
-                      <p class="mb-1 small text-muted">Company ID: {{ exp.company_id }} | Batch: {{ exp.batch or 'NA' }}</p>
-                      <p class="mb-0 small">{{ exp.experience_text[:150] }}{% if exp.experience_text|length > 150 %}...{% endif %}</p>
-                    </div>
-                    <div class="btn-group align-self-start align-self-md-center">
-                      <a class="btn btn-sm btn-success" href="{{ url_for('admin_approve', exp_id=exp.id) }}">Approve</a>
-                      <a class="btn btn-sm btn-outline-danger" href="{{ url_for('admin_reject', exp_id=exp.id) }}">Reject</a>
-                    </div>
-                  </div>
+          <div class="list-group list-group-flush">
+            {% for exp in pending %}
+            <div class="list-group-item">
+              <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
+                <div>
+                  <h6 class="mb-1">{{ exp.student_name }} &mdash; {{ exp.role or 'Role not specified' }}</h6>
+                  <p class="mb-1 small text-muted">Company ID: {{ exp.company_id }} | Batch: {{ exp.batch or 'NA' }}</p>
+                  <p class="mb-0 small">{{ exp.experience_text[:150] }}{% if exp.experience_text|length > 150 %}...{%
+                    endif %}</p>
                 </div>
-              {% endfor %}
+                <div class="btn-group align-self-start align-self-md-center">
+                  <a class="btn btn-sm btn-success" href="{{ url_for('admin_approve', exp_id=exp.id) }}">Approve</a>
+                  <a class="btn btn-sm btn-outline-danger"
+                    href="{{ url_for('admin_reject', exp_id=exp.id) }}">Reject</a>
+                </div>
+              </div>
             </div>
+            {% endfor %}
+          </div>
           {% else %}
-            <p class="text-muted mb-0">No pending experiences at the moment.</p>
+          <p class="text-muted mb-0">No pending experiences at the moment.</p>
           {% endif %}
         </div>
       </div>
@@ -45,43 +138,49 @@
       <div class="accordion" id="managementAccordion">
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingCompanies">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCompanies" aria-expanded="true" aria-controls="collapseCompanies">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCompanies"
+              aria-expanded="true" aria-controls="collapseCompanies">
               Manage Companies ({{ companies|length }})
             </button>
           </h2>
-          <div id="collapseCompanies" class="accordion-collapse collapse show" aria-labelledby="headingCompanies" data-bs-parent="#managementAccordion">
+          <div id="collapseCompanies" class="accordion-collapse collapse show" aria-labelledby="headingCompanies"
+            data-bs-parent="#managementAccordion">
             <div class="accordion-body">
               {% if companies %}
-                {% for company in companies %}
-                  <div class="border rounded-3 p-3 mb-3">
-                    <form method="POST" action="{{ url_for('admin_company_update', company_id=company.id) }}" class="row g-3 align-items-end">
-                      <div class="col-12 col-md-4">
-                        <label class="form-label">Name</label>
-                        <input type="text" name="name" class="form-control" value="{{ company.name }}" required>
-                      </div>
-                      <div class="col-12 col-md-3">
-                        <label class="form-label">Sector</label>
-                        <input type="text" name="sector" class="form-control" value="{{ company.sector or '' }}">
-                      </div>
-                      <div class="col-12 col-md-5">
-                        <label class="form-label">Website</label>
-                        <input type="url" name="website" class="form-control" value="{{ company.website or '' }}" placeholder="https://">
-                      </div>
-                      <div class="col-12">
-                        <label class="form-label">Description</label>
-                        <textarea name="description" class="form-control" rows="2" placeholder="Company overview">{{ company.description or '' }}</textarea>
-                      </div>
-                      <div class="col-12 d-flex gap-2">
-                        <button class="btn btn-success">Save Changes</button>
-                      </div>
-                    </form>
-                    <form method="POST" action="{{ url_for('admin_company_delete', company_id=company.id) }}" class="mt-2" onsubmit="return confirm('Remove company {{ company.name }}?');">
-                      <button class="btn btn-outline-danger btn-sm">Delete Company</button>
-                    </form>
+              {% for company in companies %}
+              <div class="border rounded-3 p-3 mb-3">
+                <form method="POST" action="{{ url_for('admin_company_update', company_id=company.id) }}"
+                  class="row g-3 align-items-end">
+                  <div class="col-12 col-md-4">
+                    <label class="form-label">Name</label>
+                    <input type="text" name="name" class="form-control" value="{{ company.name }}" required>
                   </div>
-                {% endfor %}
+                  <div class="col-12 col-md-3">
+                    <label class="form-label">Sector</label>
+                    <input type="text" name="sector" class="form-control" value="{{ company.sector or '' }}">
+                  </div>
+                  <div class="col-12 col-md-5">
+                    <label class="form-label">Website</label>
+                    <input type="url" name="website" class="form-control" value="{{ company.website or '' }}"
+                      placeholder="https://">
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-control" rows="2"
+                      placeholder="Company overview">{{ company.description or '' }}</textarea>
+                  </div>
+                  <div class="col-12 d-flex gap-2">
+                    <button class="btn btn-success">Save Changes</button>
+                  </div>
+                </form>
+                <form method="POST" action="{{ url_for('admin_company_delete', company_id=company.id) }}" class="mt-2"
+                  onsubmit="return confirm('Remove company {{ company.name }}?');">
+                  <button class="btn btn-outline-danger btn-sm">Delete Company</button>
+                </form>
+              </div>
+              {% endfor %}
               {% else %}
-                <p class="text-muted mb-0">No companies added yet.</p>
+              <p class="text-muted mb-0">No companies added yet.</p>
               {% endif %}
             </div>
           </div>
@@ -89,39 +188,44 @@
 
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingResources">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseResources" aria-expanded="false" aria-controls="collapseResources">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseResources" aria-expanded="false" aria-controls="collapseResources">
               Manage Practice Resources ({{ resources|length }})
             </button>
           </h2>
-          <div id="collapseResources" class="accordion-collapse collapse" aria-labelledby="headingResources" data-bs-parent="#managementAccordion">
+          <div id="collapseResources" class="accordion-collapse collapse" aria-labelledby="headingResources"
+            data-bs-parent="#managementAccordion">
             <div class="accordion-body">
               {% if resources %}
-                {% for resource in resources %}
-                  <div class="border rounded-3 p-3 mb-3">
-                    <form method="POST" action="{{ url_for('admin_resource_update', rid=resource.id) }}" class="row g-3 align-items-end">
-                      <div class="col-12">
-                        <label class="form-label">Title</label>
-                        <input type="text" name="title" class="form-control" value="{{ resource.title }}" required>
-                      </div>
-                      <div class="col-12">
-                        <label class="form-label">URL</label>
-                        <input type="url" name="url" class="form-control" value="{{ resource.url }}" required>
-                      </div>
-                      <div class="col-12">
-                        <label class="form-label">Description</label>
-                        <textarea name="description" class="form-control" rows="2">{{ resource.description or '' }}</textarea>
-                      </div>
-                      <div class="col-12 d-flex gap-2">
-                        <button class="btn btn-success">Save Changes</button>
-                      </div>
-                    </form>
-                    <form method="POST" action="{{ url_for('admin_resource_delete', rid=resource.id) }}" class="mt-2" onsubmit="return confirm('Delete this resource?');">
-                      <button class="btn btn-outline-danger btn-sm">Delete Resource</button>
-                    </form>
+              {% for resource in resources %}
+              <div class="border rounded-3 p-3 mb-3">
+                <form method="POST" action="{{ url_for('admin_resource_update', rid=resource.id) }}"
+                  class="row g-3 align-items-end">
+                  <div class="col-12">
+                    <label class="form-label">Title</label>
+                    <input type="text" name="title" class="form-control" value="{{ resource.title }}" required>
                   </div>
-                {% endfor %}
+                  <div class="col-12">
+                    <label class="form-label">URL</label>
+                    <input type="url" name="url" class="form-control" value="{{ resource.url }}" required>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-control"
+                      rows="2">{{ resource.description or '' }}</textarea>
+                  </div>
+                  <div class="col-12 d-flex gap-2">
+                    <button class="btn btn-success">Save Changes</button>
+                  </div>
+                </form>
+                <form method="POST" action="{{ url_for('admin_resource_delete', rid=resource.id) }}" class="mt-2"
+                  onsubmit="return confirm('Delete this resource?');">
+                  <button class="btn btn-outline-danger btn-sm">Delete Resource</button>
+                </form>
+              </div>
+              {% endfor %}
               {% else %}
-                <p class="text-muted mb-0">No resources uploaded yet.</p>
+              <p class="text-muted mb-0">No resources uploaded yet.</p>
               {% endif %}
             </div>
           </div>
@@ -129,35 +233,39 @@
 
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingResumes">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseResumes" aria-expanded="false" aria-controls="collapseResumes">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseResumes" aria-expanded="false" aria-controls="collapseResumes">
               Manage Resume Templates ({{ resumes|length }})
             </button>
           </h2>
-          <div id="collapseResumes" class="accordion-collapse collapse" aria-labelledby="headingResumes" data-bs-parent="#managementAccordion">
+          <div id="collapseResumes" class="accordion-collapse collapse" aria-labelledby="headingResumes"
+            data-bs-parent="#managementAccordion">
             <div class="accordion-body">
               {% if resumes %}
-                {% for resume in resumes %}
-                  <div class="border rounded-3 p-3 mb-3">
-                    <form method="POST" action="{{ url_for('admin_resume_update', rid=resume.id) }}" class="row g-3 align-items-end">
-                      <div class="col-12">
-                        <label class="form-label">Title</label>
-                        <input type="text" name="title" class="form-control" value="{{ resume.title }}" required>
-                      </div>
-                      <div class="col-12">
-                        <label class="form-label">URL</label>
-                        <input type="url" name="url" class="form-control" value="{{ resume.url }}" required>
-                      </div>
-                      <div class="col-12 d-flex gap-2">
-                        <button class="btn btn-success">Save Changes</button>
-                      </div>
-                    </form>
-                    <form method="POST" action="{{ url_for('admin_resume_delete', rid=resume.id) }}" class="mt-2" onsubmit="return confirm('Delete this resume template?');">
-                      <button class="btn btn-outline-danger btn-sm">Delete Template</button>
-                    </form>
+              {% for resume in resumes %}
+              <div class="border rounded-3 p-3 mb-3">
+                <form method="POST" action="{{ url_for('admin_resume_update', rid=resume.id) }}"
+                  class="row g-3 align-items-end">
+                  <div class="col-12">
+                    <label class="form-label">Title</label>
+                    <input type="text" name="title" class="form-control" value="{{ resume.title }}" required>
                   </div>
-                {% endfor %}
+                  <div class="col-12">
+                    <label class="form-label">URL</label>
+                    <input type="url" name="url" class="form-control" value="{{ resume.url }}" required>
+                  </div>
+                  <div class="col-12 d-flex gap-2">
+                    <button class="btn btn-success">Save Changes</button>
+                  </div>
+                </form>
+                <form method="POST" action="{{ url_for('admin_resume_delete', rid=resume.id) }}" class="mt-2"
+                  onsubmit="return confirm('Delete this resume template?');">
+                  <button class="btn btn-outline-danger btn-sm">Delete Template</button>
+                </form>
+              </div>
+              {% endfor %}
               {% else %}
-                <p class="text-muted mb-0">No resume templates uploaded yet.</p>
+              <p class="text-muted mb-0">No resume templates uploaded yet.</p>
               {% endif %}
             </div>
           </div>
@@ -165,35 +273,40 @@
 
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingAnnouncements">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAnnouncements" aria-expanded="false" aria-controls="collapseAnnouncements">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseAnnouncements" aria-expanded="false" aria-controls="collapseAnnouncements">
               Manage Announcements ({{ announcements|length }})
             </button>
           </h2>
-          <div id="collapseAnnouncements" class="accordion-collapse collapse" aria-labelledby="headingAnnouncements" data-bs-parent="#managementAccordion">
+          <div id="collapseAnnouncements" class="accordion-collapse collapse" aria-labelledby="headingAnnouncements"
+            data-bs-parent="#managementAccordion">
             <div class="accordion-body">
               {% if announcements %}
-                {% for announcement in announcements %}
-                  <div class="border rounded-3 p-3 mb-3">
-                    <form method="POST" action="{{ url_for('admin_announcement_update', aid=announcement.id) }}" class="row g-3">
-                      <div class="col-12 col-md-6">
-                        <label class="form-label">Title</label>
-                        <input type="text" name="title" class="form-control" value="{{ announcement.title }}" required>
-                      </div>
-                      <div class="col-12">
-                        <label class="form-label">Message</label>
-                        <textarea name="content" class="form-control" rows="2" required>{{ announcement.content }}</textarea>
-                      </div>
-                      <div class="col-12 d-flex gap-2">
-                        <button class="btn btn-success">Save Changes</button>
-                      </div>
-                    </form>
-                    <form method="POST" action="{{ url_for('admin_announcement_delete', aid=announcement.id) }}" class="mt-2" onsubmit="return confirm('Delete this announcement?');">
-                      <button class="btn btn-outline-danger btn-sm">Delete Announcement</button>
-                    </form>
+              {% for announcement in announcements %}
+              <div class="border rounded-3 p-3 mb-3">
+                <form method="POST" action="{{ url_for('admin_announcement_update', aid=announcement.id) }}"
+                  class="row g-3">
+                  <div class="col-12 col-md-6">
+                    <label class="form-label">Title</label>
+                    <input type="text" name="title" class="form-control" value="{{ announcement.title }}" required>
                   </div>
-                {% endfor %}
+                  <div class="col-12">
+                    <label class="form-label">Message</label>
+                    <textarea name="content" class="form-control" rows="2"
+                      required>{{ announcement.content }}</textarea>
+                  </div>
+                  <div class="col-12 d-flex gap-2">
+                    <button class="btn btn-success">Save Changes</button>
+                  </div>
+                </form>
+                <form method="POST" action="{{ url_for('admin_announcement_delete', aid=announcement.id) }}"
+                  class="mt-2" onsubmit="return confirm('Delete this announcement?');">
+                  <button class="btn btn-outline-danger btn-sm">Delete Announcement</button>
+                </form>
+              </div>
+              {% endfor %}
               {% else %}
-                <p class="text-muted mb-0">No announcements published yet.</p>
+              <p class="text-muted mb-0">No announcements published yet.</p>
               {% endif %}
             </div>
           </div>
@@ -202,37 +315,46 @@
     </div>
 
     <div class="col-12 col-lg-5">
-      <div class="card shadow-sm border-0 mb-4">
+      <div class="card shadow-sm border-0 mb-4 hover-scale">
         <div class="card-header">Create Company</div>
         <div class="card-body">
           <form method="POST" action="{{ url_for('admin_company_create') }}" class="row g-3" novalidate>
-            <div class="col-12"><label class="form-label">Name</label><input class="form-control" name="name" placeholder="Company name" required></div>
-            <div class="col-12 col-md-6"><label class="form-label">Sector</label><input class="form-control" name="sector" placeholder="Technology"></div>
-            <div class="col-12 col-md-6"><label class="form-label">Website</label><input class="form-control" name="website" type="url" placeholder="https://"></div>
-            <div class="col-12"><label class="form-label">Short Description</label><textarea class="form-control" name="description" rows="2"></textarea></div>
+            <div class="col-12"><label class="form-label">Name</label><input class="form-control" name="name"
+                placeholder="Company name" required></div>
+            <div class="col-12 col-md-6"><label class="form-label">Sector</label><input class="form-control"
+                name="sector" placeholder="Technology"></div>
+            <div class="col-12 col-md-6"><label class="form-label">Website</label><input class="form-control"
+                name="website" type="url" placeholder="https://"></div>
+            <div class="col-12"><label class="form-label">Short Description</label><textarea class="form-control"
+                name="description" rows="2"></textarea></div>
             <div class="col-12"><button class="btn btn-primary w-100">Create Company</button></div>
           </form>
         </div>
       </div>
 
-      <div class="card shadow-sm border-0 mb-4">
+      <div class="card shadow-sm border-0 mb-4 hover-scale">
         <div class="card-header">Add Practice Resource</div>
         <div class="card-body">
           <form method="POST" action="{{ url_for('admin_resource_create') }}" class="row g-3" novalidate>
-            <div class="col-12"><label class="form-label">Title</label><input class="form-control" name="title" placeholder="Resource title" required></div>
-            <div class="col-12"><label class="form-label">URL</label><input class="form-control" name="url" type="url" placeholder="https://" required></div>
-            <div class="col-12"><label class="form-label">Description</label><textarea class="form-control" name="description" rows="2" placeholder="Optional notes"></textarea></div>
+            <div class="col-12"><label class="form-label">Title</label><input class="form-control" name="title"
+                placeholder="Resource title" required></div>
+            <div class="col-12"><label class="form-label">URL</label><input class="form-control" name="url" type="url"
+                placeholder="https://" required></div>
+            <div class="col-12"><label class="form-label">Description</label><textarea class="form-control"
+                name="description" rows="2" placeholder="Optional notes"></textarea></div>
             <div class="col-12"><button class="btn btn-primary w-100">Add Resource</button></div>
           </form>
         </div>
       </div>
 
-      <div class="card shadow-sm border-0 mb-4">
+      <div class="card shadow-sm border-0 mb-4 hover-scale">
         <div class="card-header">Add Resume Template</div>
         <div class="card-body">
           <form method="POST" action="{{ url_for('admin_resume_create') }}" class="row g-3" novalidate>
-            <div class="col-12"><label class="form-label">Title</label><input class="form-control" name="title" placeholder="Resume title" required></div>
-            <div class="col-12"><label class="form-label">URL</label><input class="form-control" name="url" type="url" placeholder="https://" required></div>
+            <div class="col-12"><label class="form-label">Title</label><input class="form-control" name="title"
+                placeholder="Resume title" required></div>
+            <div class="col-12"><label class="form-label">URL</label><input class="form-control" name="url" type="url"
+                placeholder="https://" required></div>
             <div class="col-12"><button class="btn btn-primary w-100">Add Resume</button></div>
           </form>
         </div>
@@ -242,8 +364,10 @@
         <div class="card-header">Send Announcement</div>
         <div class="card-body">
           <form method="POST" action="{{ url_for('admin_announcement_create') }}" class="row g-3" novalidate>
-            <div class="col-12 col-md-6"><label class="form-label">Title</label><input class="form-control" name="title" placeholder="Headline" required></div>
-            <div class="col-12"><label class="form-label">Message</label><textarea class="form-control" name="content" rows="3" placeholder="Announcement details" required></textarea></div>
+            <div class="col-12 col-md-6"><label class="form-label">Title</label><input class="form-control" name="title"
+                placeholder="Headline" required></div>
+            <div class="col-12"><label class="form-label">Message</label><textarea class="form-control" name="content"
+                rows="3" placeholder="Announcement details" required></textarea></div>
             <div class="col-12"><button class="btn btn-primary w-100">Publish Announcement</button></div>
           </form>
         </div>
@@ -253,4 +377,3 @@
 </div>
 
 {% endblock %}
-

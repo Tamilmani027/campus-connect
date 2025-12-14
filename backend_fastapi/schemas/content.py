@@ -7,10 +7,12 @@ class ResourceCreate(BaseModel):
     title: str
     url: Optional[AnyUrl] = None
     description: Optional[str] = None
+    category: Optional[str] = "GENERAL"
 
 class ResourceOut(BaseModel):
     id: int
     title: str
+    category: Optional[str] = "GENERAL"
     url: Optional[str] = None
     description: Optional[str] = None
     file: Optional[FileStorageOut] = None

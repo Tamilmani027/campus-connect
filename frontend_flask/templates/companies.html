@@ -4,10 +4,16 @@
 <h2>Companies</h2>
 <div class="list-group">
   {% for c in companies %}
-    <a href="/company/{{ c.id }}" class="list-group-item list-group-item-action">
-      <strong>{{ c.name }}</strong> - {{ c.sector or "N/A" }}
-      <div class="small">{{ c.description[:150] }}{% if c.description|length > 150 %}...{% endif %}</div>
-    </a>
+  <a href="/company/{{ c.id }}" class="list-group-item list-group-item-action">
+    <strong>{{ c.name }}</strong> - {{ c.sector or "N/A" }}
+    <div class="small">
+      {% if c.description %}
+      {{ c.description[:150] }}{% if c.description|length > 150 %}...{% endif %}
+      {% else %}
+      <span class="text-muted">No description available</span>
+      {% endif %}
+    </div>
+  </a>
   {% endfor %}
 </div>
 {% endblock %}

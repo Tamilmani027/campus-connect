@@ -9,6 +9,7 @@ class Resource(Base):
 	title = Column(String(150), nullable=False)
 	url = Column(String(500), nullable=True)  # Made nullable since we can have file uploads
 	description = Column(Text, nullable=True)
+	category = Column(String(50), default="GENERAL")
 	created_at = Column(DateTime, server_default=func.now(), nullable=False)
 	file_id = Column(Integer, ForeignKey('file_storage.id'), nullable=True)
 	

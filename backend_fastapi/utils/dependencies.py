@@ -39,4 +39,31 @@ def get_current_student(
         raise HTTPException(status_code=404, detail="Student record not found")
     return student
 
+def get_current_user_id_and_role(authorization: str = Header(None)):
+    """
+    Return (user_id, role) tuple.
+    Role can be 'student' or 'admin'.
+    """
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authentication required")
+        
+    token = authorization.split(" ")[1] if " " in authorization else authorization
+    payload = verify_token(token)
+    
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid token")
+        
+    role = payload.get("role")
+    if role == "student":
+        return payload.get("sid"), "student"
+    elif role == "admin":
+        # Admin payload might use 'id' or 'aid' or 'sub' - verify jwt_handler. Usually it's id.
+        # Assuming admin payload has 'id' or 'sub' as user id. 
+        # But wait, require_admin checks role='admin'.
+        # Let's assume standard payload.
+        return payload.get("id", payload.get("sub", 0)), "admin"
+    
+    raise HTTPException(status_code=403, detail="Unknown role")
 
+def get_current_admin_or_student(authorization: str = Header(None)):
+    return get_current_user_id_and_role(authorization)

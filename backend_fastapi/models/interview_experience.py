@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, Enum
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from ..database import Base
 
 class InterviewExperience(Base):
@@ -16,4 +16,4 @@ class InterviewExperience(Base):
     tips = Column(String(1000), nullable=True)
     status = Column(String(50), default="pending")  # pending/approved/rejected
 
-    company = relationship("Company", backref="experiences")
+    company = relationship("Company", backref=backref("experiences", cascade="all, delete-orphan"))

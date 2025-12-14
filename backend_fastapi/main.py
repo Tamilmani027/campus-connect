@@ -7,12 +7,12 @@ import logging
 # the package context (e.g. some hosting platforms invoking the module).
 try:
 	from .database import engine, Base
-	from .routers import auth, companies, experiences, admin, students, content
+	from .routers import auth, companies, experiences, admin, students, content, analytics, drives, questions, discussion, planner, bookmarks
 	# Import models to ensure they are registered
 	from . import models  # ensures models are imported
 except Exception:
 	from backend_fastapi.database import engine, Base
-	from backend_fastapi.routers import auth, companies, experiences, admin, students, content
+	from backend_fastapi.routers import auth, companies, experiences, admin, students, content, analytics, drives, questions, discussion, planner, bookmarks
 	# Import models to ensure they are registered
 	import backend_fastapi.models as models
 
@@ -44,6 +44,12 @@ app.include_router(experiences.router)
 app.include_router(admin.router)
 app.include_router(students.router)
 app.include_router(content.router)
+app.include_router(analytics.router)
+app.include_router(drives.router)
+app.include_router(questions.router)
+app.include_router(discussion.router)
+app.include_router(planner.router)
+app.include_router(bookmarks.router)
 
 @app.get("/")
 def read_root():

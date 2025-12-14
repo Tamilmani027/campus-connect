@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from ..database import Base
 
 class CompanyQuestion(Base):
@@ -11,4 +11,4 @@ class CompanyQuestion(Base):
     difficulty = Column(String(50), nullable=True)
     year = Column(Integer, nullable=True)
 
-    company = relationship("Company", backref="questions")
+    company = relationship("Company", backref=backref("questions", cascade="all, delete-orphan"))

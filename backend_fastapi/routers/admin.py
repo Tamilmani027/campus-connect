@@ -118,6 +118,8 @@ def admin_delete_company(company_id: int, db: Session = Depends(get_db), _=Depen
     company = db.query(Company).filter(Company.id == company_id).first()
     if not company:
         raise HTTPException(status_code=404, detail="Company not found")
+
+
     db.delete(company)
     db.commit()
     return {"msg": "deleted"}
