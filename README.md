@@ -79,7 +79,4 @@ The Placement Preparation Portal is a comprehensive, full-stack web application 
      - **Method 2**: `cd frontend_flask && python app.py`
    - Visit: http://localhost:5000
 
-## Notes
-- Flask frontend calls FastAPI at `http://localhost:8000/`. Change `frontend_flask/utils/api_client.py` API_BASE if deploying separately.
-- For production, use HTTPS, proper SECRET_KEY, and a reverse proxy (nginx). Use Alembic for DB migrations.
-- This repo is a starter template — add search, pagination, file uploads, user accounts, and tests later.
+
