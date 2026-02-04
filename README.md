@@ -5,7 +5,7 @@ The Campus-Connect is a comprehensive, full-stack web application designed to st
 
 ## Key Features
 
-### 🎓 Student Role
+### Student Role
 *   **Interactive Dashboard**
     *   Centralized hub for aptitude, coding, interview prep, and HR resources.
     *   Access company-specific preparation guides and skill roadmaps.
