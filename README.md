@@ -1,4 +1,4 @@
-# Campus-Connect (FastAPI + Flask + MySQL)
+# Campus-Connect
 
 ## Project Overview
 The Campus-Connect is a comprehensive, full-stack web application designed to streamline campus placement preparation. Built with a high-performance **FastAPI** backend and a dynamic **Flask** frontend, the platform bridges the gap between students and resources. It offers a structured environment for students to master aptitude, coding, and soft skills, while providing administrators with powerful tools to manage content and track engagement.
