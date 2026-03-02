@@ -3,21 +3,140 @@
 {% block title %}Dashboard | Campus Connect{% endblock %}
 
 {% block content %}
-<div class="container section-padding">
+<style>
+  .streak-container {
+    /* sky blue gradient instead of orange */
+    background: linear-gradient(135deg, #87CEEB 0%, #00BFFF 100%);
+    border-radius: 6px;
+    /* force square appearance */
+    width: 120px;
+    height: 120px;
+    padding: 10px 0;
+    color: white;
+    box-shadow: 0 3px 8px rgba(0, 191, 255, 0.3);
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .streak-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    animation: float 20s linear infinite;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(50px, 50px);
+    }
+  }
+
+  .streak-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .streak-flame {
+    font-size: 2.2rem;
+    display: inline-block;
+    animation: flameFlicker 0.6s ease-in-out infinite;
+    margin-bottom: 6px;
+  }
+
+  @keyframes flameFlicker {
+    0%, 100% { transform: scale(1) rotate(-2deg); }
+    25% { transform: scale(1.05) rotate(2deg); }
+    50% { transform: scale(1) rotate(-1deg); }
+    75% { transform: scale(1.05) rotate(1deg); }
+  }
+
+  .streak-days {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .streak-label {
+    display: none; /* removed per request */
+  }
+
+  .streak-message {
+    font-size: 0.7rem;
+    margin-top: 8px;
+    opacity: 0.85;
+    font-style: italic;
+  }
+
+  .streak-emoji {
+    font-size: 1.2rem;
+    margin-top: -4px;
+    opacity: 0.9;
+  }
+
+  .streak-milestone {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 6px 6px;
+    font-size: 0.8rem;
+    margin-top: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .milestone-badge {
+    display: inline-block;
+    background: gold;
+    color: #ff6b35;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+    margin-right: 4px;
+  }
+
+  .streak-item {
+    display: inline-block;
+    margin: 0 4px;
+    padding: 2px 6px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    font-size: 0.75rem;
+  }
+</style>
+
+<div class="container section-padding" style="position:relative;">
   <!-- Welcome Section -->
-  <div class="row align-items-center mb-5">
+  <div class="row align-items-center mb-3" style="padding-top:8px;padding-bottom:8px;">
     <div class="col-md-8">
-      <h1 class="display-6 fw-bold text-primary">Welcome, {{ profile.name }}! 👋</h1>
-      <p class="lead text-muted">Ready to prepare for your dream career?</p>
+      <h1 class="display-6 fw-bold text-primary" style="font-size:1.75rem;">Welcome, {% if profile %}{{ profile.name }}{% else %}Student{% endif %}! 👋</h1>
+      <p class="lead text-muted" style="font-size:0.9rem;">Ready to prepare for your dream career?</p>
     </div>
-    <div class="col-md-4 text-md-end">
-      <div class="card bg-primary-soft border-0">
-        <div class="card-body p-3 text-center">
-          <span class="d-block text-uppercase small fw-bold tracking-wide">Current Streak</span>
-          <span class="display-6 fw-bold">🔥 3 Days</span>
-        </div>
-      </div>
-    </div>
+
   </div>
 
   <!-- Quick Access Grid -->
@@ -47,8 +166,8 @@
             <div class="stat-icon bg-warning-soft text-warning mx-auto mb-3 rounded-circle">
               <i class="fa-solid fa-brain"></i>
             </div>
-            <h5 class="fw-bold text-dark">Aptitude</h5>
-            <p class="text-muted small mb-0">Sharpen your logical, verbal, and quant skills.</p>
+            <h5 class="fw-bold text-dark">CS Fundamentals and Aptitude</h5>
+            <p class="text-muted small mb-0">Sharpen your CS, logical, verbal, and quant skills.</p>
           </div>
           <div class="card-footer bg-white border-0 pt-0 pb-3">
             <a href="{{ url_for('resources_page', category='APTITUDE') }}"
@@ -65,7 +184,7 @@
             <div class="stat-icon bg-success-soft text-success mx-auto mb-3 rounded-circle">
               <i class="fa-solid fa-user-tie"></i>
             </div>
-            <h5 class="fw-bold text-dark">HR & Communication</h5>
+            <h5 class="fw-bold text-dark">Soft Skills</h5>
             <p class="text-muted small mb-0">Master behavioral questions and soft skills.</p>
           </div>
           <div class="card-footer bg-white border-0 pt-0 pb-3">
@@ -87,8 +206,7 @@
             <p class="text-muted small mb-0">Track your progress with 30/60/90 day roadmaps.</p>
           </div>
           <div class="card-footer bg-white border-0 pt-0 pb-3">
-            <a href="{{ url_for('resources_page', category='PLANNER') }}" class="btn btn-sm btn-outline-info w-100">View
-              Resources</a>
+            <a href="{{ url_for('study_planner_page') }}" class="btn btn-sm btn-outline-info w-100">Go to Plan</a>
           </div>
         </div>
       </a>
@@ -116,7 +234,7 @@
               style="background-color: #f3f4f6;">
               <i class="fa-solid fa-building"></i>
             </div>
-            <h5 class="fw-bold text-dark">Company Profiles</h5>
+            <h5 class="fw-bold text-dark">Visited Companies</h5>
             <p class="text-muted small mb-0">Explore previous year questions and interview experiences.</p>
           </div>
           <div class="card-footer bg-white border-0 pt-0 pb-3">
@@ -208,4 +326,103 @@
     </div>
   </div>
 </div>
+
+<script>
+  // Streak Functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const streakCount = parseInt(document.getElementById('streakCount').textContent);
+    const streakFlame = document.getElementById('streakFlame');
+    const streakContainer = document.querySelector('.streak-container');
+    
+    // Add pulse effect on page load
+    if (streakCount > 0) {
+      streakFlame.style.animation = 'none';
+      setTimeout(() => {
+        streakFlame.style.animation = 'flameFlicker 0.6s ease-in-out infinite';
+      }, 10);
+      
+      // Add glow effect
+      streakContainer.style.boxShadow = '0 8px 32px rgba(255, 107, 53, 0.5)';
+    }
+    
+    // Show congratulation message for milestones
+    const milestones = [3, 7, 14, 30, 60, 100];
+    if (milestones.includes(streakCount)) {
+      showMilestoneNotification(streakCount);
+    }
+    
+    // Add click interaction
+    streakContainer.addEventListener('click', function() {
+      streakFlame.style.transform = 'scale(1.2) rotate(10deg)';
+      setTimeout(() => {
+        streakFlame.style.transform = 'scale(1) rotate(0deg)';
+      }, 300);
+      
+      // Show motivational toast
+      showMotivationalMessage(streakCount);
+    });
+  });
+  
+  function showMilestoneNotification(days) {
+    const messages = {
+      3: "🌟 3-Day Streak! You're building momentum!",
+      7: "⭐ 7-Day Streak! One week of consistency!",
+      14: "✨ 2-Week Streak! Incredible dedication!",
+      30: "👑 30-Day Streak! You're a champion!",
+      60: "🏆 60-Day Streak! Truly exceptional!",
+      100: "🎯 100-Day Streak! You're unstoppable!"
+    };
+    
+    if (messages[days]) {
+      const toast = document.createElement('div');
+      toast.className = 'alert alert-success alert-dismissible fade show';
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        min-width: 280px;
+        z-index: 9999;
+        animation: slideIn 0.5s ease-out;
+      `;
+      toast.innerHTML = `
+        <strong>${messages[days]}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      `;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 5000);
+    }
+  }
+  
+  function showMotivationalMessage(days) {
+    const motivations = [
+      "Keep the fire burning! 🔥",
+      "You've got this! 💪",
+      "Stay consistent! 🎯",
+      "Keep pushing! 🚀",
+      "Amazing dedication! ⭐"
+    ];
+    
+    const message = motivations[Math.floor(Math.random() * motivations.length)];
+    console.log(message);
+  }
+  
+  // Add CSS animation for slide-in
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+</script>
 {% endblock %}

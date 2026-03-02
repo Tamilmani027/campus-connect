@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from datetime import timedelta
+from datetime import timedelta, datetime
 try:
 	from ..database import get_db
 	from ..models.student import Student
@@ -50,7 +50,38 @@ def student_login(payload: StudentLogin, db: Session = Depends(get_db)):
 
 
 @router.get("/me", response_model=StudentOut)
-def student_me(current_student: Student = Depends(get_current_student)):
+def student_me(current_student: Student = Depends(get_current_student), db: Session = Depends(get_db)):
+    # Update Streak Logic
+    today = datetime.now().date()
+    yesterday = today - timedelta(days=1)
+
+    # normalize last_active_date to a date object regardless of whether the
+    # column was populated with a datetime or date (some migrations/users may
+    # have only a date stored).
+    last_active_raw = current_student.last_active_date
+    if last_active_raw:
+        if isinstance(last_active_raw, datetime):
+            last_active = last_active_raw.date()
+        else:
+            # assume it's already a date
+            last_active = last_active_raw
+    else:
+        last_active = None
+
+    # update streak only when the student hasn't been active today
+    if last_active != today:
+        if last_active == yesterday:
+            # consecutive day
+            current_student.current_streak = (current_student.current_streak or 0) + 1
+        else:
+            # first time or missed one+ days
+            current_student.current_streak = 1
+
+        # store full datetime for future comparisons
+        current_student.last_active_date = datetime.now()
+        db.commit()
+        db.refresh(current_student)
+
     return current_student
 
 

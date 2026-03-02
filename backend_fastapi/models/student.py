@@ -10,6 +10,8 @@ class Student(Base):
 	department = Column(String(50), nullable=True)
 	batch = Column(Integer, nullable=True)
 	password_hash = Column(String(255), nullable=False)
+	current_streak = Column(Integer, default=0)
+	last_active_date = Column(DateTime, nullable=True)
 	created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
 

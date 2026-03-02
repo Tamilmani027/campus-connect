@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     MYSQL_DB: str = "placement_portal"
     SECRET_KEY: str = "supersecretkey"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60*24
+    MAX_FILE_SIZE_MB: int = 5
+    ALLOWED_EXTENSIONS: set = {"pdf", "docx", "doc", "jpg", "jpeg", "png"}
+    GEMINI_API_KEY: str = ""
 
     class Config:
         env_file = str(ENV_FILE) if ENV_FILE.exists() else ".env"

@@ -1,12 +1,30 @@
 {% extends "base.html" %}
-{% block title %}Practice Resources | CAMPUS CONNECT{% endblock %}
+{% block title %}{% if current_category %}{{ current_category|capitalize }} Resources | {% else %}Resources | {% endif %}CAMPUS CONNECT{% endblock %}
 {% block content %}
 
 <section class="py-4">
   <div class="container">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
       <div>
-        <h2 class="fw-semibold mb-1">Practice Resources</h2>
+        {% if current_category %}
+          {% set heading = current_category %}
+          {% if current_category == 'CODING' %}
+            {% set heading = 'Coding Arena' %}
+          {% elif current_category == 'APTITUDE' %}
+            {% set heading = 'CS & Aptitude' %}
+          {% elif current_category == 'HR' %}
+            {% set heading = 'HR & Communication' %}
+          {% elif current_category == 'PLANNER' %}
+            {% set heading = 'Planner' %}
+          {% elif current_category == 'COMPANIES' %}
+            {% set heading = 'Company Profiles' %}
+          {% elif current_category == 'GENERAL' %}
+            {% set heading = 'General' %}
+          {% endif %}
+          <h2 class="fw-semibold mb-1">{{ heading }} Resources</h2>
+        {% else %}
+          <h2 class="fw-semibold mb-1">All Resources</h2>
+        {% endif %}
         <p class="text-muted mb-0">Curated links, PDFs, and videos to boost your placement preparation.</p>
       </div>
     </div>
@@ -17,15 +35,13 @@
           <a href="{{ url_for('resources_page') }}"
             class="nav-link {{ 'active' if not current_category else 'bg-light text-dark' }}">All</a>
           <a href="{{ url_for('resources_page', category='CODING') }}"
-            class="nav-link {{ 'active' if current_category == 'CODING' else 'bg-light text-dark' }}">Coding</a>
+            class="nav-link {{ 'active' if current_category == 'CODING' else 'bg-light text-dark' }}">Coding Arena</a>
           <a href="{{ url_for('resources_page', category='APTITUDE') }}"
-            class="nav-link {{ 'active' if current_category == 'APTITUDE' else 'bg-light text-dark' }}">Aptitude</a>
+            class="nav-link {{ 'active' if current_category == 'APTITUDE' else 'bg-light text-dark' }}">CS & Aptitude</a>
           <a href="{{ url_for('resources_page', category='HR') }}"
-            class="nav-link {{ 'active' if current_category == 'HR' else 'bg-light text-dark' }}">HR</a>
-          <a href="{{ url_for('resources_page', category='PLANNER') }}"
-            class="nav-link {{ 'active' if current_category == 'PLANNER' else 'bg-light text-dark' }}">Planner</a>
+            class="nav-link {{ 'active' if current_category == 'HR' else 'bg-light text-dark' }}">Soft skills</a>
           <a href="{{ url_for('resources_page', category='COMPANIES') }}"
-            class="nav-link {{ 'active' if current_category == 'COMPANIES' else 'bg-light text-dark' }}">Companies</a>
+            class="nav-link {{ 'active' if current_category == 'COMPANIES' else 'bg-light text-dark' }}">Visited Companies</a>
           <a href="{{ url_for('resources_page', category='GENERAL') }}"
             class="nav-link {{ 'active' if current_category == 'GENERAL' else 'bg-light text-dark' }}">General</a>
         </div>
@@ -37,9 +53,19 @@
         <div class="card h-100 shadow-sm border-0">
           <div class="card-body d-flex flex-column">
             <h5 class="card-title">{{ resource.title }}</h5>
-            <p class="card-text text-muted small flex-grow-1">{{ resource.description or 'Resource shared by placement
-              cell.' }}</p>
-            <a class="btn btn-primary mt-3" href="{{ resource.url }}" target="_blank" rel="noopener">Open Resource</a>
+            <p class="card-text text-muted small flex-grow-1">{{ resource.description or 'Resource shared by placement cell.' }}</p>
+            <div class="d-flex gap-2 flex-column mt-3">
+              {% if resource.url %}
+              <a class="btn btn-primary btn-sm" href="{{ resource.url }}" target="_blank" rel="noopener">
+                <i class="fa-solid fa-link me-1"></i> Open Link
+              </a>
+              {% endif %}
+              {% if resource.file %}
+              <a class="btn btn-success btn-sm" href="{{ API_BASE_URL }}/content/file/{{ resource.file.id }}" target="_blank" rel="noopener">
+                <i class="fa-solid fa-download me-1"></i> Download {{ resource.file.file_type.upper() }}
+              </a>
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>

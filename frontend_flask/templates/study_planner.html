@@ -15,145 +15,244 @@
         </div>
         {% endif %}
     </div>
+</div>
 
-    {% if not subscription %}
-    <!-- Plan Selection -->
-    <div class="row g-4">
-        <div class="col-12 text-center mb-4">
-            <h3 class="fw-bold">Choose Your Roadmap</h3>
-            <p class="text-muted">Select a plan that fits your schedule.</p>
-        </div>
-
-        {% for plan in plans %}
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm text-center py-4 hover-scale">
-                <div class="card-body">
-                    <div class="mb-4">
-                        <span class="display-4 fw-bold text-primary">{{ plan.duration_days }}</span>
-                        <span class="text-muted d-block mt-1">Days</span>
+<!-- My Plans Section -->
+{% if all_plans %}
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white border-0">
+        <h5 class="mb-0 fw-bold"><i class="fa-solid fa-list-check me-2"></i>My Study Plans</h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            {% for plan in all_plans %}
+            <div class="col-md-6 col-lg-4">
+                <div
+                    class="card h-100 border {% if plan.is_active %}border-primary border-2{% else %}border-light{% endif %}">
+                    <div class="card-body">
+                        {% if plan.is_active %}
+                        <span class="badge bg-primary mb-2">Active</span>
+                        {% endif %}
+                        <h6 class="fw-bold">{{ plan.plan_title }}</h6>
+                        <p class="text-muted small mb-2">{{ plan.plan_description[:80] }}...</p>
+                        <div class="d-flex justify-content-between text-sm mb-3">
+                            <span><i class="fa-solid fa-calendar me-1"></i>{{ plan.duration_days }} days</span>
+                            <span><i class="fa-solid fa-check-circle me-1"></i>{{ plan.completed_tasks_count }}/{{
+                                plan.total_tasks }}</span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            {% if not plan.is_active %}
+                            <form action="{{ url_for('planner_activate', subscription_id=plan.subscription_id) }}"
+                                method="POST" class="flex-grow-1">
+                                <button type="submit" class="btn btn-sm btn-outline-primary w-100">
+                                    <i class="fa-solid fa-play me-1"></i>Resume
+                                </button>
+                            </form>
+                            {% endif %}
+                            <form action="{{ url_for('planner_delete', subscription_id=plan.subscription_id) }}"
+                                method="POST" onsubmit="return confirm('Delete this plan?')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                    <h4 class="fw-bold">{{ plan.title }}</h4>
-                    <p class="text-muted mb-4 px-3">{{ plan.description }}</p>
-                    <form action="{{ url_for('subscribe_plan', plan_id=plan.id) }}" method="POST">
-                        <button type="submit" class="btn btn-primary w-100 py-2 rounded-pill fw-bold">Start
-                            Challenge</button>
-                    </form>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% else %}
-        <div class="col-12 text-center">
-            <div class="alert alert-info">No plans available at the moment. Admin needs to seed plans.</div>
-            <form action="{{ url_for('seed_plan') }}" method="POST" class="d-inline">
-                <button type="submit" class="btn btn-sm btn-outline-secondary">Seed Demo Plan (Admin)</button>
-            </form>
-        </div>
-        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- AI Generation Form - Always Visible -->
+<div class="card border-0 shadow-sm mb-4 bg-light">
+    <div class="card-body">
+        <h5 class="fw-bold mb-3 text-center"><i class="fa-solid fa-magic text-primary me-2"></i>Generate Custom Roadmap
+        </h5>
+        <p class="text-muted text-center small">Create a personalized AI-powered learning roadmap</p>
+
+        <form action="{{ url_for('planner_generate') }}" method="POST" class="row g-3 justify-content-center mt-2">
+            <div class="col-md-4">
+                <input type="text" name="topic" class="form-control" placeholder="Topic (e.g. Python, Machine Learning)"
+                    required>
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="duration" class="form-control" placeholder="Days" min="3" max="60" value="30"
+                    required>
+            </div>
+            <div class="col-md-3">
+                <select name="difficulty" class="form-select">
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fa-solid fa-robot me-1"></i> Generate
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if not subscription %}
+<!-- Plan Selection -->
+<div class="row g-4">
+    <div class="col-12 text-center mb-4">
+        <h3 class="fw-bold">Available Learning Roadmaps</h3>
+        <p class="text-muted">Select a structured plan to guide your learning journey.</p>
     </div>
 
-    {% else %}
-    <!-- Active Plan Dashboard -->
-    <div class="row g-4">
-        <div class="col-lg-4">
-            <!-- Progress Card -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body text-center p-4">
-                    <h5 class="fw-bold mb-3">Your Progress</h5>
-                    <div class="progress mb-3" style="height: 10px;">
-                        {% set total = subscription.plan.tasks|length %}
-                        {% set completed = subscription.completed_tasks_list|length %}
-                        {% set percent = (completed / total * 100)|round|int if total > 0 else 0 %}
-                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ percent }}%;"
-                            aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <div class="d-flex justify-content-between text-muted small fw-bold">
-                        <span>{{ completed }} Completed</span>
-                        <span>{{ total - completed }} Remaining</span>
-                    </div>
-                </div>
+    {% for plan in plans %}
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm text-center py-4 hover-scale position-relative">
+            <!-- delete button for available roadmap -->
+            <div class="position-absolute" style="top: 8px; right: 8px;">
+                <form action="{{ url_for('planner_plan_delete', plan_id=plan.id) }}" method="POST" onsubmit="return confirm('Remove this roadmap?');">
+                    <button type="submit" class="btn btn-sm btn-outline-danger p-1">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </form>
             </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <span class="display-4 fw-bold text-primary">{{ plan.duration_days }}</span>
+                    <span class="text-muted d-block mt-1">Days</span>
+                </div>
+                <h4 class="fw-bold">{{ plan.title }}</h4>
+                <p class="text-muted mb-4 px-3">{{ plan.description }}</p>
+                <form action="{{ url_for('planner_subscribe', plan_id=plan.id) }}" method="POST">
+                    <button type="submit" class="btn btn-primary w-100 py-2 rounded-pill fw-bold">Start Plan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center">
+        <p class="text-muted">No pre-made plans available. Use the AI generator above to create your own!</p>
+    </div>
+    {% endfor %}
+</div>
 
-            <!-- Day Tracker -->
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white border-0 fw-bold">Current Day</div>
-                <div class="card-body text-center py-4">
-                    <span class="display-1 fw-bold text-primary">{{ subscription.current_day }}</span>
-                    <span class="d-block text-muted">of {{ subscription.plan.duration_days }} Days</span>
+{% else %}
+<!-- Active Plan Dashboard -->
+<div class="row g-4">
+    <div class="col-lg-4">
+        <!-- Progress Card -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body text-center p-4">
+                <h5 class="fw-bold mb-3">Your Progress</h5>
+                <div class="progress mb-3" style="height: 10px;">
+                    {% set total = subscription.plan.tasks|length %}
+                    {% set completed = subscription.completed_tasks_list|length %}
+                    {% set percent = (completed / total * 100)|round|int if total > 0 else 0 %}
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ percent }}%;"
+                        aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="d-flex justify-content-between text-muted small fw-bold">
+                    <span>{{ completed }} Completed</span>
+                    <span>{{ total - completed }} Remaining</span>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-8">
-            <!-- Daily Tasks -->
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold">Today's Tasks (Day {{ subscription.current_day }})</h5>
-                </div>
-                <div class="card-body p-0">
+        <!-- Day Tracker -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 fw-bold">Current Day</div>
+            <div class="card-body text-center py-4">
+                <span class="display-1 fw-bold text-primary">{{ subscription.current_day }}</span>
+                <span class="d-block text-muted">of {{ subscription.plan.duration_days }} Days</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <!-- Daily Tasks -->
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">Complete Roadmap</h5>
+                <span class="badge bg-primary">{{ subscription.plan.duration_days }} Days</span>
+            </div>
+            <div class="card-body p-0" style="max-height: 600px; overflow-y: auto;">
+                {% for day in range(1, subscription.plan.duration_days + 1) %}
+                <div class="p-3 {% if day != subscription.plan.duration_days %}border-bottom{% endif %}">
+                    <div class="d-flex align-items-center mb-3">
+                        <span
+                            class="badge {% if day == subscription.current_day %}bg-primary{% elif day < subscription.current_day %}bg-success{% else %}bg-secondary{% endif %} me-2">
+                            Day {{ day }}
+                        </span>
+                        {% if day == subscription.current_day %}
+                        <span class="badge bg-warning text-dark"><i class="fa-solid fa-star me-1"></i>Current</span>
+                        {% elif day < subscription.current_day %} <span class="text-success small"><i
+                                class="fa-solid fa-check me-1"></i>Completed</span>
+                            {% endif %}
+                    </div>
+
                     <div class="list-group list-group-flush">
+                        {% set day_has_tasks = false %}
                         {% for task in subscription.plan.tasks %}
-                        {% if task.day_number == subscription.current_day %}
-                        <div class="list-group-item p-4 border-0 d-flex align-items-start gap-3">
+                        {% if task.day_number == day %}
+                        {% set day_has_tasks = true %}
+                        <div class="list-group-item p-3 border-0 d-flex align-items-start gap-2">
                             <div class="form-check pt-1">
                                 <input class="form-check-input task-checkbox" type="checkbox"
                                     data-task-id="{{ task.id }}" id="task-{{ task.id }}" {% if task.id in
-                                    subscription.completed_tasks_list %}checked disabled{% endif %}>
+                                    subscription.completed_tasks_list %}checked{% endif %}>
                             </div>
                             <div class="flex-grow-1">
-                                <label class="form-check-label fw-bold d-block text-dark h6 mb-1"
-                                    for="task-{{ task.id }}">
+                                <label class="form-check-label fw-bold d-block text-dark mb-1" for="task-{{ task.id }}">
                                     {{ task.title }}
                                 </label>
                                 <p class="text-muted small mb-2">{{ task.description }}</p>
                                 {% if task.reference_link %}
-                                <a href="{{ task.reference_link }}"
+                                <a href="{{ task.reference_link }}" target="_blank"
                                     class="btn btn-sm btn-light text-primary rounded-pill px-3">
-                                    <i class="fa-solid fa-external-link-alt me-1"></i> View Resource
+                                    <i class="fa-solid fa-external-link-alt me-1"></i> Resource
                                 </a>
                                 {% endif %}
                             </div>
                         </div>
                         {% endif %}
                         {% endfor %}
-                    </div>
 
-                    {% if subscription.current_day_tasks_count == 0 %}
-                    <div class="text-center p-5">
-                        <p class="text-muted">No explicit tasks for today. Take a break! 🎉</p>
+                        {% if not day_has_tasks %}
+                        <p class="text-muted small mb-0 ps-2">No specific tasks - Review previous concepts</p>
+                        {% endif %}
                     </div>
-                    {% endif %}
                 </div>
+                {% endfor %}
             </div>
         </div>
     </div>
-    {% endif %}
+</div>
+{% endif %}
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
+    // allow manual toggling of tasks and dynamically update the progress bar
+    const progressBar = document.querySelector('.progress-bar');
+    function updateProgress() {
+        const total = document.querySelectorAll('.task-checkbox').length;
+        const done = document.querySelectorAll('.task-checkbox:checked').length;
+        const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+        if (progressBar) {
+            progressBar.style.width = pct + '%';
+            progressBar.setAttribute('aria-valuenow', pct);
+        }
+    }
+
     document.querySelectorAll('.task-checkbox').forEach(checkbox => {
         checkbox.addEventListener('change', function () {
-            if (this.checked) {
-                const taskId = this.dataset.taskId;
-                fetch(`/planner/tasks/${taskId}/complete`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            // Start confetti or visual feedback
-                            this.disabled = true;
-                            // Ideally reload to update progress bar or update DOM dynamically
-                            location.reload();
-                        }
-                    })
-                    .catch(err => console.error(err));
-            }
+            // recalc progress when any checkbox toggles
+            updateProgress();
         });
     });
+
+    // initialize on page load
+    updateProgress();
 </script>
 {% endblock %}

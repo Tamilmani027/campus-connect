@@ -1,93 +1,445 @@
 {% extends "base.html" %}
-{% block title %}Manage Resources | Admin{% endblock %}
+{% block title %}Admin Content Management | Campus Connect{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-5">
-        <div class="card">
-            <div class="card-header bg-dark text-white">
-                <h5 class="mb-0">Add New Resource</h5>
-            </div>
-            <div class="card-body">
-                <form action="{{ url_for('admin_add_resource') }}" method="POST" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label class="form-label">Title</label>
-                        <input type="text" class="form-control" name="title" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Category</label>
-                        <select class="form-select" name="category">
-                            <option value="GENERAL">General</option>
-                            <option value="CODING">Coding Arena</option>
-                            <option value="APTITUDE">Aptitude</option>
-                            <option value="HR">HR & Communication</option>
-                            <option value="PLANNER">Study Planner</option>
-                            <option value="FORUM">Discussion Forum</option>
-                            <option value="COMPANIES">Company Profiles</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-control" name="description" rows="3"></textarea>
-                    </div>
-
-                    <hr>
-                    <p class="text-muted small">Provide either a Link OR a File (PDF, PPT, Image, etc.)</p>
-
-                    <div class="mb-3">
-                        <label class="form-label">External Link (URL)</label>
-                        <input type="url" class="form-control" name="url" placeholder="https://youtube.com/...">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Upload File</label>
-                        <input type="file" class="form-control" name="file">
-                        <div class="form-text">Supported: PDF, DOC, PPT, Images</div>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100">Upload Resource</button>
-                </form>
-            </div>
-        </div>
+<div class="container section-padding">
+    <div class="mb-4">
+        <h2 class="fw-bold text-dark">Admin Content Management</h2>
+        <p class="text-muted">Manage resources, announcements, and company information for students.</p>
     </div>
 
-    <div class="col-md-7">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Existing Resources</h5>
-            </div>
-            <div class="card-body">
-                <div class="list-group">
-                    {% for res in resources %}
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h6 class="mb-1">{{ res.title }}</h6>
-                            <small class="text-muted">{{ res.created_at[:10] }}</small>
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="coding-tab" data-bs-toggle="tab" data-bs-target="#coding" type="button" role="tab">
+                <i class="fa-solid fa-code me-2"></i>Coding Arena
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="aptitude-tab" data-bs-toggle="tab" data-bs-target="#aptitude" type="button" role="tab">
+                <i class="fa-solid fa-brain me-2"></i>CS & Aptitude
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="softskills-tab" data-bs-toggle="tab" data-bs-target="#softskills" type="button" role="tab">
+                <i class="fa-solid fa-user-tie me-2"></i>Soft Skills
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="companies-tab" data-bs-toggle="tab" data-bs-target="#companies" type="button" role="tab">
+                <i class="fa-solid fa-building me-2"></i>Companies
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="announcements-tab" data-bs-toggle="tab" data-bs-target="#announcements" type="button" role="tab">
+                <i class="fa-solid fa-bullhorn me-2"></i>Announcements
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Coding Arena Tab -->
+        <div class="tab-pane fade show active" id="coding" role="tabpanel">
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fa-solid fa-plus-circle me-2"></i>Add Coding Resource</h5>
                         </div>
-                        <p class="mb-1 small">{{ res.description or '' }}</p>
-
-                        <div class="mb-2">
-                            <span class="badge bg-secondary">{{ res.category or 'GENERAL' }}</span>
+                        <div class="card-body">
+                            <form action="{{ url_for('admin_add_resource') }}" method="POST" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Title <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="title" placeholder="e.g., DSA Cheat Sheet" required>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="hidden" name="category" value="CODING">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Description</label>
+                                    <textarea class="form-control" name="description" rows="3" placeholder="Details about this resource"></textarea>
+                                </div>
+                                <div class="alert alert-info small mb-3">
+                                    <i class="fa-solid fa-info-circle me-2"></i>
+                                    Provide either an external <strong>Link</strong> OR upload a <strong>File</strong>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">External Link (URL)</label>
+                                    <input type="url" class="form-control" name="url" placeholder="https://example.com">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Upload File</label>
+                                    <input type="file" class="form-control" name="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.txt,.zip">
+                                    <small class="form-text text-muted d-block mt-2">PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, Images, TXT, ZIP</small>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                                    <i class="fa-solid fa-cloud-arrow-up me-2"></i>Upload Resource
+                                </button>
+                            </form>
                         </div>
-
-                        <div>
-                            {% if res.file_id %}
-                            <span class="badge bg-success"><i class="bi bi-file-earmark"></i> File</span>
-                            {% endif %}
-
-                            {% if res.url %}
-                            <a href="{{ res.url }}" target="_blank"
-                                class="badge bg-info text-decoration-none text-dark">
-                                <i class="bi bi-link-45deg"></i> Link
-                            </a>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h5 class="mb-0"><i class="fa-solid fa-list me-2"></i>Coding Arena Resources</h5>
+                        </div>
+                        <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                            {% set coding_resources = resources|selectattr('category', 'equalto', 'CODING')|list %}
+                            {% if coding_resources %}
+                            <div class="list-group list-group-flush">
+                                {% for res in coding_resources %}
+                                <div class="list-group-item px-0 py-3 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div><h6 class="mb-1 fw-bold">{{ res.title }}</h6>
+                                            <small class="text-muted">{{ res.created_at[:10] }}</small></div>
+                                        <span class="badge bg-primary text-white">CODING</span></div>
+                                    {% if res.description %}<p class="mb-2 small text-muted">{{ res.description }}</p>{% endif %}
+                                    <div class="d-flex gap-2 flex-wrap align-items-center">
+                                        {% if res.file %}<span class="badge bg-success"><i class="fa-solid fa-file me-1"></i>{{ res.file.file_type.upper() }}</span>
+                                            <small class="text-muted">{{ (res.file.file_size / 1024)|round(1) }} KB</small>{% endif %}
+                                        {% if res.url %}<a href="{{ res.url }}" target="_blank" class="badge bg-info text-decoration-none text-white"><i class="fa-solid fa-link me-1"></i>Link</a>{% endif %}
+                                        <button type="button" class="btn btn-sm btn-outline-warning ms-auto" data-bs-toggle="modal" data-bs-target="#editModal{{ res.id }}" title="Edit"><i class="fa-solid fa-edit"></i></button>
+                                        <form action="{{ url_for('admin_delete_resource', resource_id=res.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this resource?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="text-center py-5 text-muted">
+                                <i class="fa-solid fa-inbox fs-1 mb-3 d-block opacity-50"></i>
+                                <p class="mb-0">No resources uploaded yet.</p>
+                            </div>
                             {% endif %}
                         </div>
                     </div>
-                    {% else %}
-                    <p class="text-muted">No resources found.</p>
-                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- CS & Aptitude Tab -->
+        <div class="tab-pane fade" id="aptitude" role="tabpanel">
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0"><i class="fa-solid fa-plus-circle me-2"></i>Add Aptitude Resource</h5>
+                        </div>
+                        <div class="card-body">
+                            <form action="{{ url_for('admin_add_resource') }}" method="POST" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Title <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="title" placeholder="e.g., Quantitative Reasoning Guide" required>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="hidden" name="category" value="APTITUDE">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Description</label>
+                                    <textarea class="form-control" name="description" rows="3" placeholder="Details about this resource"></textarea>
+                                </div>
+                                <div class="alert alert-info small mb-3">
+                                    <i class="fa-solid fa-info-circle me-2"></i>
+                                    Provide either an external <strong>Link</strong> OR upload a <strong>File</strong>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">External Link (URL)</label>
+                                    <input type="url" class="form-control" name="url" placeholder="https://example.com">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Upload File</label>
+                                    <input type="file" class="form-control" name="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.txt,.zip">
+                                    <small class="form-text text-muted d-block mt-2">PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, Images, TXT, ZIP</small>
+                                </div>
+                                <button type="submit" class="btn btn-warning w-100 py-2 fw-bold text-dark">
+                                    <i class="fa-solid fa-cloud-arrow-up me-2"></i>Upload Resource
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h5 class="mb-0"><i class="fa-solid fa-list me-2"></i>CS & Aptitude Resources</h5>
+                        </div>
+                        <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                            {% set aptitude_resources = resources|selectattr('category', 'equalto', 'APTITUDE')|list %}
+                            {% if aptitude_resources %}
+                            <div class="list-group list-group-flush">
+                                {% for res in aptitude_resources %}
+                                <div class="list-group-item px-0 py-3 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div><h6 class="mb-1 fw-bold">{{ res.title }}</h6>
+                                            <small class="text-muted">{{ res.created_at[:10] }}</small></div>
+                                        <span class="badge bg-warning text-dark">APTITUDE</span></div>
+                                    {% if res.description %}<p class="mb-2 small text-muted">{{ res.description }}</p>{% endif %}
+                                    <div class="d-flex gap-2 flex-wrap align-items-center">
+                                        {% if res.file %}<span class="badge bg-success"><i class="fa-solid fa-file me-1"></i>{{ res.file.file_type.upper() }}</span>
+                                            <small class="text-muted">{{ (res.file.file_size / 1024)|round(1) }} KB</small>{% endif %}
+                                        {% if res.url %}<a href="{{ res.url }}" target="_blank" class="badge bg-info text-decoration-none text-white"><i class="fa-solid fa-link me-1"></i>Link</a>{% endif %}
+                                        <button type="button" class="btn btn-sm btn-outline-warning ms-auto" data-bs-toggle="modal" data-bs-target="#editModal{{ res.id }}" title="Edit"><i class="fa-solid fa-edit"></i></button>
+                                        <form action="{{ url_for('admin_delete_resource', resource_id=res.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this resource?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="text-center py-5 text-muted">
+                                <i class="fa-solid fa-inbox fs-1 mb-3 d-block opacity-50"></i>
+                                <p class="mb-0">No resources uploaded yet.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Soft Skills Tab -->
+        <div class="tab-pane fade" id="softskills" role="tabpanel">
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fa-solid fa-plus-circle me-2"></i>Add Soft Skills Resource</h5>
+                        </div>
+                        <div class="card-body">
+                            <form action="{{ url_for('admin_add_resource') }}" method="POST" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Title <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="title" placeholder="e.g., HR Interview Tips" required>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="hidden" name="category" value="HR">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Description</label>
+                                    <textarea class="form-control" name="description" rows="3" placeholder="Details about this resource"></textarea>
+                                </div>
+                                <div class="alert alert-info small mb-3">
+                                    <i class="fa-solid fa-info-circle me-2"></i>
+                                    Provide either an external <strong>Link</strong> OR upload a <strong>File</strong>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">External Link (URL)</label>
+                                    <input type="url" class="form-control" name="url" placeholder="https://example.com">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Upload File</label>
+                                    <input type="file" class="form-control" name="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.txt,.zip">
+                                    <small class="form-text text-muted d-block mt-2">PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, Images, TXT, ZIP</small>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100 py-2 fw-bold">
+                                    <i class="fa-solid fa-cloud-arrow-up me-2"></i>Upload Resource
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h5 class="mb-0"><i class="fa-solid fa-list me-2"></i>Soft Skills Resources</h5>
+                        </div>
+                        <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                            {% set hr_resources = resources|selectattr('category', 'equalto', 'HR')|list %}
+                            {% if hr_resources %}
+                            <div class="list-group list-group-flush">
+                                {% for res in hr_resources %}
+                                <div class="list-group-item px-0 py-3 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div><h6 class="mb-1 fw-bold">{{ res.title }}</h6>
+                                            <small class="text-muted">{{ res.created_at[:10] }}</small></div>
+                                        <span class="badge bg-success text-white">HR</span></div>
+                                    {% if res.description %}<p class="mb-2 small text-muted">{{ res.description }}</p>{% endif %}
+                                    <div class="d-flex gap-2 flex-wrap align-items-center">
+                                        {% if res.file %}<span class="badge bg-success"><i class="fa-solid fa-file me-1"></i>{{ res.file.file_type.upper() }}</span>
+                                            <small class="text-muted">{{ (res.file.file_size / 1024)|round(1) }} KB</small>{% endif %}
+                                        {% if res.url %}<a href="{{ res.url }}" target="_blank" class="badge bg-info text-decoration-none text-white"><i class="fa-solid fa-link me-1"></i>Link</a>{% endif %}
+                                        <button type="button" class="btn btn-sm btn-outline-warning ms-auto" data-bs-toggle="modal" data-bs-target="#editModal{{ res.id }}" title="Edit"><i class="fa-solid fa-edit"></i></button>
+                                        <form action="{{ url_for('admin_delete_resource', resource_id=res.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this resource?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="text-center py-5 text-muted">
+                                <i class="fa-solid fa-inbox fs-1 mb-3 d-block opacity-50"></i>
+                                <p class="mb-0">No resources uploaded yet.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Companies Tab -->
+        <div class="tab-pane fade" id="companies" role="tabpanel">
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0"><i class="fa-solid fa-plus-circle me-2"></i>Add Company Info</h5>
+                        </div>
+                        <div class="card-body">
+                            <form action="{{ url_for('admin_add_resource') }}" method="POST" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Company Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="title" placeholder="e.g., Google" required>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="hidden" name="category" value="COMPANIES">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Company Details</label>
+                                    <textarea class="form-control" name="description" rows="3" placeholder="Hiring details, interview process, etc."></textarea>
+                                </div>
+                                <div class="alert alert-info small mb-3">
+                                    <i class="fa-solid fa-info-circle me-2"></i>
+                                    Attach company brochures, hiring process docs, or provide company website link
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Company Website/Link</label>
+                                    <input type="url" class="form-control" name="url" placeholder="https://example.com">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Upload Document</label>
+                                    <input type="file" class="form-control" name="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.gif">
+                                    <small class="form-text text-muted d-block mt-2">PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, Images</small>
+                                </div>
+                                <button type="submit" class="btn btn-secondary w-100 py-2 fw-bold">
+                                    <i class="fa-solid fa-cloud-arrow-up me-2"></i>Add Company
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h5 class="mb-0"><i class="fa-solid fa-list me-2"></i>Visited Companies</h5>
+                        </div>
+                        <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                            {% set company_resources = resources|selectattr('category', 'equalto', 'COMPANIES')|list %}
+                            {% if company_resources %}
+                            <div class="list-group list-group-flush">
+                                {% for res in company_resources %}
+                                <div class="list-group-item px-0 py-3 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div><h6 class="mb-1 fw-bold">{{ res.title }}</h6>
+                                            <small class="text-muted">{{ res.created_at[:10] }}</small></div>
+                                        <span class="badge bg-secondary text-white">COMPANY</span></div>
+                                    {% if res.description %}<p class="mb-2 small text-muted">{{ res.description }}</p>{% endif %}
+                                    <div class="d-flex gap-2 flex-wrap align-items-center">
+                                        {% if res.file %}<span class="badge bg-success"><i class="fa-solid fa-file me-1"></i>{{ res.file.file_type.upper() }}</span>
+                                            <small class="text-muted">{{ (res.file.file_size / 1024)|round(1) }} KB</small>{% endif %}
+                                        {% if res.url %}<a href="{{ res.url }}" target="_blank" class="badge bg-info text-decoration-none text-white"><i class="fa-solid fa-link me-1"></i>Website</a>{% endif %}
+                                        <button type="button" class="btn btn-sm btn-outline-warning ms-auto" data-bs-toggle="modal" data-bs-target="#editModal{{ res.id }}" title="Edit"><i class="fa-solid fa-edit"></i></button>
+                                        <form action="{{ url_for('admin_delete_resource', resource_id=res.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this resource?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="text-center py-5 text-muted">
+                                <i class="fa-solid fa-inbox fs-1 mb-3 d-block opacity-50"></i>
+                                <p class="mb-0">No companies added yet.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Announcements Tab -->
+        <div class="tab-pane fade" id="announcements" role="tabpanel">
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0"><i class="fa-solid fa-bullhorn me-2"></i>Publish Announcement</h5>
+                        </div>
+                        <div class="card-body">
+                            <form action="{{ url_for('admin_add_resource') }}" method="POST" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Announcement Title <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="title" placeholder="e.g., New Batch Update" required>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="hidden" name="category" value="GENERAL">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Message <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" name="description" rows="4" placeholder="Enter your announcement message" required></textarea>
+                                </div>
+                                <div class="alert alert-info small mb-3">
+                                    <i class="fa-solid fa-info-circle me-2"></i>
+                                    Optionally attach supporting documents or links
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">External Link (Optional)</label>
+                                    <input type="url" class="form-control" name="url" placeholder="https://example.com">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Attachment (Optional)</label>
+                                    <input type="file" class="form-control" name="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.gif">
+                                    <small class="form-text text-muted d-block mt-2">PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, Images</small>
+                                </div>
+                                <button type="submit" class="btn btn-danger w-100 py-2 fw-bold">
+                                    <i class="fa-solid fa-paper-plane me-2"></i>Publish Announcement
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h5 class="mb-0"><i class="fa-solid fa-list me-2"></i>Recent Announcements</h5>
+                        </div>
+                        <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                            {% set general_resources = resources|selectattr('category', 'equalto', 'GENERAL')|list %}
+                            {% if general_resources %}
+                            <div class="list-group list-group-flush">
+                                {% for res in general_resources %}
+                                <div class="list-group-item px-0 py-3 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div><h6 class="mb-1 fw-bold">{{ res.title }}</h6>
+                                            <small class="text-muted">{{ res.created_at[:10] }}</small></div>
+                                        <span class="badge bg-danger text-white">ANNOUNCEMENT</span></div>
+                                    {% if res.description %}<p class="mb-2 small text-muted">{{ res.description }}</p>{% endif %}
+                                    <div class="d-flex gap-2 flex-wrap align-items-center">
+                                        {% if res.file %}<span class="badge bg-success"><i class="fa-solid fa-file me-1"></i>{{ res.file.file_type.upper() }}</span>
+                                            <small class="text-muted">{{ (res.file.file_size / 1024)|round(1) }} KB</small>{% endif %}
+                                        {% if res.url %}<a href="{{ res.url }}" target="_blank" class="badge bg-info text-decoration-none text-white"><i class="fa-solid fa-link me-1"></i>Link</a>{% endif %}
+                                        <button type="button" class="btn btn-sm btn-outline-warning ms-auto" data-bs-toggle="modal" data-bs-target="#editModal{{ res.id }}" title="Edit"><i class="fa-solid fa-edit"></i></button>
+                                        <form action="{{ url_for('admin_delete_resource', resource_id=res.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this resource?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="text-center py-5 text-muted">
+                                <i class="fa-solid fa-inbox fs-1 mb-3 d-block opacity-50"></i>
+                                <p class="mb-0">No announcements published yet.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

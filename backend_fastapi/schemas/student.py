@@ -18,6 +18,7 @@ class StudentOut(BaseModel):
 	email: EmailStr
 	department: Optional[str] = None
 	batch: Optional[int] = None
+	current_streak: int = 0
 	class Config:
 		from_attributes = True
 

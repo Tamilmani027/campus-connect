@@ -39,7 +39,7 @@
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <h5 class="fw-bold mb-1">
-                            <a href="{{ url_for('forum_thread', thread_id=thread.id) }}"
+                            <a href="{{ url_for('forum_thread_detail', thread_id=thread.id) }}"
                                 class="text-dark text-decoration-none stretched-link">
                                 {{ thread.title }}
                             </a>
@@ -74,7 +74,7 @@
                 <h5 class="modal-title fw-bold">Create New Thread</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="{{ url_for('create_thread') }}" method="POST">
+            <form action="{{ url_for('forum_create') }}" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label fw-bold">Title</label>

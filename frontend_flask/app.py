@@ -54,7 +54,10 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY")
 @app.context_processor
 def inject_globals():
     """Inject global template variables."""
-    return {"current_year": datetime.now().year}
+    return {
+        "current_year": datetime.now().year,
+        "API_BASE_URL": API_BASE_URL.rstrip("/"),  # used by templates for backend requests
+    }
 
 
 # ---------- Route Protection Decorators ----------
@@ -90,7 +93,7 @@ def home():
     if session.get('student_token'):
         return redirect(url_for('student_dashboard'))
     if session.get('admin_token'):
-        return redirect(url_for('admin_dashboard'))
+        return redirect(url_for('admin_resources_page'))
     return render_template("home.html")
 
 @app.route("/companies")
@@ -371,8 +374,14 @@ def study_planner_page():
     
     subscription = None
     plans = []
+    all_plans = []
     
     try:
+        # Fetch all student's plans (active and inactive)
+        all_plans_req = requests.get(f"{API_BASE_URL}/planner/my-plans", headers=headers, timeout=API_TIMEOUT)
+        if all_plans_req.status_code == 200:
+            all_plans = all_plans_req.json()
+        
         # Check for active subscription
         sub_req = requests.get(f"{API_BASE_URL}/planner/my-subscription", headers=headers, timeout=API_TIMEOUT)
         
@@ -389,7 +398,7 @@ def study_planner_page():
     except Exception:
         flash("Error loading planner data", "warning")
         
-    return render_template("study_planner.html", subscription=subscription, plans=plans)
+    return render_template("study_planner.html", subscription=subscription, plans=plans, all_plans=all_plans)
 
 @app.route("/study-planner/subscribe/<int:plan_id>", methods=["POST"])
 @student_required
@@ -406,6 +415,59 @@ def planner_subscribe(plan_id):
         flash("Network error", "danger")
     return redirect(url_for("study_planner_page"))
 
+@app.route("/study-planner/plan-delete/<int:plan_id>", methods=["POST"])
+@student_required
+def planner_plan_delete(plan_id):
+    """Remove an available roadmap (plan) from the list."""
+    token = session.get("student_token")
+    headers = {"Authorization": f"Bearer {token}"}
+    try:
+        r = requests.delete(f"{API_BASE_URL}/planner/plans/{plan_id}", headers=headers, timeout=API_TIMEOUT)
+        if r.status_code == 200:
+            flash("Plan removed successfully!", "success")
+        else:
+            flash("Failed to remove plan: " + r.text, "danger")
+    except Exception as e:
+        flash(f"Network error: {str(e)}", "danger")
+    return redirect(url_for("study_planner_page"))
+
+@app.route("/study-planner/seed", methods=["POST"])
+def seed_plan():
+    # Try to seed using admin token if available, else try student token (might fail)
+    token = session.get("admin_token") or session.get("student_token")
+    headers = {"Authorization": f"Bearer {token}"}
+    try:
+        r = requests.post(f"{API_BASE_URL}/planner/seed", headers=headers, timeout=API_TIMEOUT)
+        if r.status_code == 200:
+            flash("Demo plan seeded successfully!", "success")
+        elif r.status_code == 403 or r.status_code == 401:
+            flash("Permission denied: You need to be an Admin to seed plans.", "danger")
+        else:
+            flash("Seeding failed: " + r.text, "danger")
+    except Exception:
+        flash("Network error", "danger")
+    return redirect(url_for("study_planner_page"))
+
+@app.route("/study-planner/generate", methods=["POST"])
+@student_required
+def planner_generate():
+    token = session.get("student_token")
+    headers = {"Authorization": f"Bearer {token}"}
+    payload = {
+        "topic": request.form.get("topic"),
+        "duration": int(request.form.get("duration")),
+        "difficulty": request.form.get("difficulty")
+    }
+    try:
+        r = requests.post(f"{API_BASE_URL}/planner/generate", json=payload, headers=headers, timeout=60) # Increased timeout for AI
+        if r.status_code == 200:
+            flash("Plan generated successfully! You can now subscribe to it.", "success")
+        else:
+            flash("AI Generation failed: " + r.text, "danger")
+    except Exception as e:
+        flash(f"Network error: {str(e)}", "danger")
+    return redirect(url_for("study_planner_page"))
+
 @app.route("/study-planner/task/<int:task_id>/complete", methods=["POST"])
 @student_required
 def planner_complete_task(task_id):
@@ -420,11 +482,35 @@ def planner_complete_task(task_id):
     except Exception as e:
         return {"status": "error", "message": str(e)}, 500
 
+@app.route("/study-planner/activate/<int:subscription_id>", methods=["POST"])
+@student_required
+def planner_activate(subscription_id):
+    token = session.get("student_token")
+    headers = {"Authorization": f"Bearer {token}"}
+    try:
+        r = requests.post(f"{API_BASE_URL}/planner/subscriptions/{subscription_id}/activate", headers=headers, timeout=API_TIMEOUT)
+        if r.status_code == 200:
+            flash("Plan activated successfully!", "success")
+        else:
+            flash("Failed to activate plan: " + r.text, "danger")
+    except Exception as e:
+        flash(f"Network error: {str(e)}", "danger")
+    return redirect(url_for("study_planner_page"))
 
-
-
-
-
+@app.route("/study-planner/delete/<int:subscription_id>", methods=["POST"])
+@student_required
+def planner_delete(subscription_id):
+    token = session.get("student_token")
+    headers = {"Authorization": f"Bearer {token}"}
+    try:
+        r = requests.delete(f"{API_BASE_URL}/planner/subscriptions/{subscription_id}", headers=headers, timeout=API_TIMEOUT)
+        if r.status_code == 200:
+            flash("Plan deleted successfully!", "success")
+        else:
+            flash("Failed to delete plan: " + r.text, "danger")
+    except Exception as e:
+        flash(f"Network error: {str(e)}", "danger")
+    return redirect(url_for("study_planner_page"))
 
 # ---------- Bookmarks ----------
 
@@ -609,7 +695,7 @@ def admin_login():
             token = r.json().get("access_token")
             session["admin_token"] = token
             flash("Logged in as admin", "success")
-            return redirect(url_for("admin_dashboard"))
+            return redirect(url_for("admin_resources_page"))
         else:
             flash("Login failed: " + r.text, "danger")
             return redirect(url_for("login_page"))
@@ -848,7 +934,64 @@ def admin_add_resource():
         
     return redirect(url_for("admin_resources_page"))
 
-@app.route("/admin/approve/<int:exp_id>")
+@app.route("/admin/resources/<int:resource_id>/delete", methods=["POST"])
+@admin_required
+def admin_delete_resource(resource_id):
+    """Delete a resource by ID"""
+    token = session.get("admin_token")
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    try:
+        # Call backend DELETE endpoint
+        r = requests.delete(
+            f"{API_BASE_URL}/content/resources/{resource_id}",
+            headers=headers,
+            timeout=API_TIMEOUT
+        )
+        if r.status_code == 200:
+            flash("Resource deleted successfully", "success")
+        else:
+            flash(f"Failed to delete resource: {r.text}", "danger")
+    except Exception as e:
+        flash(f"Error deleting resource: {str(e)}", "danger")
+    
+    return redirect(url_for("admin_resources_page"))
+
+@app.route("/admin/resources/<int:resource_id>/update", methods=["POST"])
+@admin_required
+def admin_update_resource(resource_id):
+    """Update a resource"""
+    token = session.get("admin_token")
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    data = {
+        "title": request.form.get("title", ""),
+        "description": request.form.get("description", ""),
+        "url": request.form.get("url", "")
+    }
+    
+    files = {}
+    if 'file' in request.files:
+        f = request.files['file']
+        if f.filename:
+            files = {'file': (f.filename, f.stream, f.content_type)}
+    
+    try:
+        r = requests.put(
+            f"{API_BASE_URL}/content/resources/{resource_id}",
+            data=data,
+            files=files if files else None,
+            headers=headers,
+            timeout=30
+        )
+        if r.status_code == 200:
+            flash("Resource updated successfully", "success")
+        else:
+            flash(f"Failed to update resource: {r.text}", "danger")
+    except Exception as e:
+        flash(f"Error updating resource: {str(e)}", "danger")
+    
+    return redirect(url_for("admin_resources_page"))
 @admin_required
 def admin_approve(exp_id):
     token = session.get("admin_token")

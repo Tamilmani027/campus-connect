@@ -36,28 +36,8 @@
                 Home</a></li>
 
             {% if session.get('student_token') %}
-            <!-- Student Links -->
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('student_dashboard') }}"><i
-                  class="fa-solid fa-chart-line me-1"></i> Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('companies') }}"><i
-                  class="fa-solid fa-building me-1"></i> Companies</a></li>
-
-            <!-- Dropdown for Prep -->
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"><i
-                  class="fa-solid fa-book-open me-1"></i> Prep</a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{{ url_for('resources_page') }}">Resources</a></li>
-                <li><a class="dropdown-item" href="{{ url_for('practice_page') }}?type=CODING">Coding Area</a></li>
-                <li><a class="dropdown-item" href="{{ url_for('practice_page') }}?type=APTITUDE">Aptitude</a></li>
-                <li><a class="dropdown-item" href="{{ url_for('practice_page') }}?type=HR">HR Prep</a></li>
-              </ul>
-            </li>
-
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('forum_page') }}"><i
-                  class="fa-solid fa-comments me-1"></i> Forum</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('study_planner_page') }}"><i
-                  class="fa-solid fa-calendar-check me-1"></i> Plan</a></li>
+            <!-- Student Links trimmed to essentials -->
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('study_planner_page') }}"><i class="fa-solid fa-calendar-check me-1"></i> Plan</a></li>
 
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"><i
@@ -73,15 +53,14 @@
             </li>
 
             {% elif session.get('admin_token') %}
-            <!-- Admin Links -->
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard') }}"><i
-                  class="fa-solid fa-tachometer-alt me-1"></i> Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_resources_page') }}"><i
-                  class="fa-solid fa-folder-open me-1"></i> Resources</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_add_question_page') }}"><i
-                  class="fa-solid fa-plus-circle me-1"></i> Add Content</a></li>
-            <li class="nav-item"><a class="nav-link text-danger" href="{{ url_for('admin_logout') }}"><i
-                  class="fa-solid fa-sign-out-alt me-1"></i> Logout</a></li>
+            <!-- Admin Links minimalized -->
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_resources_page') }}"><i class="fa-solid fa-book me-1"></i> Resources</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"><i class="fa-solid fa-user-circle me-1"></i> Account</a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item text-danger" href="{{ url_for('admin_logout') }}">Logout</a></li>
+              </ul>
+            </li>
             {% else %}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
